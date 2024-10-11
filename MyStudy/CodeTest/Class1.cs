@@ -82,8 +82,64 @@ namespace MyStudy.CodeTest
 
 
     }
+
+    public class Class5
+    {
+        public static void Main(string [] args)
+        {
+            string [] s;
+
+            Console.Clear();
+            s = Console.ReadLine().Split(' ');
+
+            int a = int.Parse(s [0]);
+            int b = int.Parse(s [1]);
+            int c = a + b;
+            Console.WriteLine($"{a} + {b} = {c}");
+        }
+    }
+
+    public class Class6
+    {
+        public static void Main( string [] args)
+        {
+            string s;
+
+            Console.Clear();
+            s = Console.ReadLine();
+
+            char [] chars = s.ToCharArray();
+            for ( int i = 0; i < s.Length; i++ )
+            {
+                Console.WriteLine(chars [i]);
+            }
+        }
+    }
+    public class Class7
+    {
+        public void Class()
+        {
+            String s;
+
+            Console.Clear();
+            s = Console.ReadLine();
+
+            int a = Int32.Parse(s);
+
+            if(a%2 == 0 )
+            {
+                Console.WriteLine($"{a} is even");
+            }
+            else
+            {
+                Console.WriteLine($"{a} is odd");
+            }
+        }
+
+    }
+
+
+    source :  https://school.programmers.co.kr/learn/challenges
 }
 
 
-
-source :  https://school.programmers.co.kr/learn/challenges
