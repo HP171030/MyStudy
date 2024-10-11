@@ -8,9 +8,16 @@ namespace MyStudy
 {
     public class Dictionary<TKey, TValue>
     {
-        public List<KeyValuePair<TKey, TValue>> [] tables;
+        List<KeyValuePair<TKey, TValue>> [] table;
 
-
+        public Dictionary( int size )
+        {
+            table = new List<KeyValuePair<TKey, TValue>> [size];
+            for ( int i = 0; i < size; i++ )
+            {
+                table [i] = new List<KeyValuePair<TKey, TValue>>();
+            }
+        }
 
     }
 
