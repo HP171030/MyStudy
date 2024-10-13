@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyStudy.CodeTest
+﻿namespace MyStudy.CodeTest
 {
-    public class Class1
+    public class Level0
     {
-        public static void Main( string [] args )
-        {
-            
-        }
-
         public void Test2( string [] args )
         {
             Console.Clear();
@@ -123,18 +112,18 @@ namespace MyStudy.CodeTest
             return new string(chars);
         }
 
-        public string Test9(string str1,string str2 )
+        public string Test9( string str1, string str2 )
         {
             char [] chars = str1.ToCharArray();
             char [] chars2 = str2.ToCharArray();
 
             char [] resultChar = new char [chars.Length + chars2.Length];
 
-            for ( int i = 0; i < chars.Length; i++)
+            for ( int i = 0; i < chars.Length; i++ )
             {
                 resultChar [2 * i] = chars [i];
             }
-            for(int i = 0; i < chars2.Length; i++ )
+            for ( int i = 0; i < chars2.Length; i++ )
             {
                 resultChar [2 * i + 1] = chars2 [i];
             }
@@ -151,12 +140,12 @@ namespace MyStudy.CodeTest
         public string Test11( string my_string, int k )
         {
             string answer = "";
-            for(int i = 0; i < k; i++ )
+            for ( int i = 0; i < k; i++ )
             {
                 answer += my_string; // my_string을 answer에 이어 붙임
             }
 
-             answer = String.Concat(Enumerable.Repeat(my_string,k));
+            answer = String.Concat(Enumerable.Repeat(my_string, k));
             return answer;
         }
         public int Test12( int a, int b )
@@ -185,11 +174,82 @@ namespace MyStudy.CodeTest
 
             return answer;
         }
+        public int Test14( string [] babbling )
+        {
+            string [] valid = { "aya", "ye", "woo", "ma" };
+            int answer = 0;
+
+            for ( int i = 0; i < babbling.Length; i++ )
+            {
+                string modified = babbling [i];
+                foreach ( string word in valid )
+                {
+                    if ( modified.Contains(word) )
+                    {
+                        modified = modified.Replace(word, "");
+                    }
+
+                }
+                modified.Replace(" ", "");
+                if ( string.IsNullOrEmpty(modified) )
+                {
+                    answer++;
+                }
+
+            }
+            return answer;
+
+
+        }
+        public int Test15( int n )
+        {
+            int answer = 0;
+            for ( int i = 2; i < n; i++ )
+            {
+                if ( n % i == 1 )
+                {
+                    answer = i;
+                    break;
+                }
+            }
+            return answer;
+        }
+        public int Test16( int [] nums )
+        {
+            int answer = 0;
+            bool IsPrime( int num )
+            {
+                if ( num < 2 ) return false;
+                for ( int i = 2; i * i <= num; i++ )
+                {
+                    if ( num % i == 0 )
+                        return false;
+                }
+                return true;
+            }
+
+            for ( int i = 0; i < nums.Length; i++ )
+            {
+                for ( int j = i + 1; j < nums.Length; j++ )
+                { // j는 i+1부터
+                    for ( int k = j + 1; k < nums.Length; k++ )
+                    { // k는 j+1부터
+                        int sum = nums [i] + nums [j] + nums [k];
+                        if ( IsPrime(sum) )
+                        {
+                            answer++;
+                        }
+                    }
+                }
+            }
+
+
+            return answer;
+        }
+
+
+        //    source :  https://school.programmers.co.kr/learn/challenges
     }
-
-
-
-//    source :  https://school.programmers.co.kr/learn/challenges
 }
 
 
