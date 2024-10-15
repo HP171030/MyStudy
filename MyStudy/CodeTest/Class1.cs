@@ -1,5 +1,6 @@
-﻿namespace MyStudy.CodeTest
-{
+﻿
+namespace MyStudy.CodeTest
+{ using System.Collections.Generic;
     public class Level0
     {
         public void Test2( string [] args )
@@ -246,10 +247,101 @@
 
             return answer;
         }
+        public long [] Test17( int x, int n )
+        {
+            long [] answer = new long [n];
+            for ( int i = 0; i < n; i++ )
+            {
+                answer [i] = ( long )x * ( i + 1 ); // x에 (i + 1)을 곱해서 각 요소에 저장합니다.
+            }
 
+            return answer;
+        }
+        public int Test18( int n, int a, int b )
+        {
+            int answer = 0;
 
+            int [] players = new int [n];
+
+            double count = Math.Log(n, 2);
+
+            int resultA = a;
+            int resultB = b;
+
+            for(int i = 0; i < count; i++ )
+            {
+                resultA = (resultA +1) /2;                         
+                resultB = (resultB +1) /2;
+                answer++;
+                if (resultA == resultB )
+                {
+                    break;
+                }
+
+            }
+
+            return answer;
+        }
+
+        public int Test19( int n, int [,] edge )
+        {
+            List<int> [] nodes = new List<int> [n + 1];
+            for(int i = 1; i < n + 1; i++ )
+            {
+                nodes [i] = new List<int>();
+            }
+            for(int i = 0; i < edge.GetLength(0); i++ )
+            {
+                int a = edge [i, 0];
+                int b = edge [i, 1];
+
+                nodes [a].Add(b);
+                nodes [b].Add(a);
+
+                
+            }
+
+            Queue<int> queue = new Queue<int>();
+            int [] distance = new int [n + 1];
+
+            Array.Fill(distance, -1);
+
+            queue.Enqueue(1);
+            distance [1] = 0;
+
+            while(queue.Count > 0 )
+            {
+                int current = queue.Dequeue();
+                
+                foreach(int neighbor in nodes [current] )
+                {
+                    if ( distance [neighbor] == -1 )
+                    {
+                        distance [neighbor] = distance [current] + 1;
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+
+            int maxDis = 0;
+            int count = 0;
+
+            for(int i = 1; i <= n; i++ )
+            {
+                if(maxDis < distance [i] )
+                {
+
+                    maxDis = distance [i];
+                    count = 1;
+                }
+                else if ( maxDis == distance [i] )
+                    count++;
+
+            }
+            return count;
+
+        }
+    }
         //    source :  https://school.programmers.co.kr/learn/challenges
     }
-}
-
 
