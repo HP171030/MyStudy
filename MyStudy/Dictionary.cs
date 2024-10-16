@@ -21,7 +21,7 @@ namespace MyStudy
 
     }
 
-    class Program
+   /* class Program
     {
         static void Main( string [] args )
         {
@@ -33,5 +33,5 @@ namespace MyStudy
 
             Console.WriteLine(list.Get(0));
         }
-    }
+    }*/
 }
