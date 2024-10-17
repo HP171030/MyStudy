@@ -1,6 +1,8 @@
 ﻿
 namespace MyStudy.CodeTest
 { using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     public class Level0
     {
         public void Test2( string [] args )
@@ -340,6 +342,119 @@ namespace MyStudy.CodeTest
             }
             return count;
 
+        }
+        public struct Time
+        {
+            public int Minutes { get; set; }
+            public int Seconds { get; set; }
+
+            public Time( int minutes, int seconds )
+            {
+                Minutes = minutes;
+                Seconds = seconds;
+                Normalize();
+            }
+
+            public static Time operator +( Time t1, Time t2 )
+            {
+                return new Time(t1.Minutes + t2.Minutes, t1.Seconds + t2.Seconds);
+            }
+
+            public static Time operator -( Time t1, Time t2 )
+            {
+                return new Time(t1.Minutes - t2.Minutes, t1.Seconds - t2.Seconds);
+            }
+
+            public static bool operator <( Time t1, Time t2 )
+            {
+                return t1.ToSeconds() < t2.ToSeconds();
+            }
+
+            public static bool operator >( Time t1, Time t2 )
+            {
+                return t1.ToSeconds() > t2.ToSeconds();
+            }
+
+            void Normalize()
+            {
+                if ( Seconds >= 60 )
+                {
+                    Minutes += Seconds / 60;
+                    Seconds %= 60;
+                }
+                else if ( Seconds < 0 )
+                {
+                    int extraMin = ( Math.Abs(Seconds) / 60 ) + 1;
+                    Seconds += extraMin * 60;
+                    Minutes -= extraMin;
+                }
+                if ( Minutes < 0 )
+                {
+                    int totalSeconds = ToSeconds();
+                    Minutes = totalSeconds / 60; // 분 계산
+                    Seconds = totalSeconds % 60; // 초 계산
+                }
+            }
+
+            public int ToSeconds()
+            {
+                return Minutes * 60 + Seconds;
+            }
+
+            public override string ToString()
+            {
+                return $"{Minutes:D2}:{Seconds:D2}";
+            }
+        }
+
+        public string PCCP_1( string video_len, string pos, string op_start, string op_end, string [] commands )
+        {
+            string answer = "";
+            Time TimeParse(string time)
+            {
+                string [] timeArray = time.Split(":");
+                int min = int.Parse(timeArray [0]);
+                int sec = int.Parse(timeArray [1]);
+
+                return new Time(min, sec);
+            }
+
+
+            Time curTime = TimeParse(pos);
+            Time opStart = TimeParse(op_start);
+            Time opEnd = TimeParse(op_end);
+            Time videoTime = TimeParse(video_len);
+
+
+            for(int i =0; i < commands.Length; i++ )
+            {
+                switch( commands [i] )
+                {
+                    case "prev": curTime -= new Time(0, 10);
+                        if(curTime < new Time(0, 0) )
+                        {
+                            curTime.Seconds = 0;
+                            curTime.Minutes = 0;
+                        }
+                        break;
+                    case "next" : curTime += new Time(0, 10);
+                        if(curTime > videoTime )
+                        {
+                            curTime = videoTime;
+                        }
+                        break;
+                }
+            }
+            if ( curTime > opStart && curTime < opEnd )
+            {
+                curTime = opEnd;
+            }
+
+            answer = $"{curTime.Minutes} {curTime.Seconds}";
+
+
+
+            return answer;
         }
     }
         //    source :  https://school.programmers.co.kr/learn/challenges

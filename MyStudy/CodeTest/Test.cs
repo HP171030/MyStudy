@@ -1,16 +1,4 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
-using System.Text;
-using System;
+﻿using System;
 
 
 
@@ -88,7 +76,7 @@ class Result
 
 class Solution
 {
-    public static void Main( string [] args )
+    public static void Main2( string [] args )
     {
         int readingsCount = Convert.ToInt32(Console.ReadLine().Trim());
 
@@ -172,6 +160,121 @@ class NQueen {
     }
 
 
+}
+public class Solution2
+{
+    public struct Time
+    {
+        public int Minutes { get; set; }
+        public int Seconds { get; set; }
+
+        public Time( int minutes, int seconds )
+        {
+            Minutes = minutes;
+            Seconds = seconds;
+            Normalize(); // Normalize 호출
+        }
+
+        public static Time operator +( Time t1, Time t2 )
+        {
+            return new Time(t1.Minutes + t2.Minutes, t1.Seconds + t2.Seconds);
+        }
+
+        public static Time operator -( Time t1, Time t2 )
+        {
+            return new Time(t1.Minutes - t2.Minutes, t1.Seconds - t2.Seconds);
+        }
+
+        public static bool operator <( Time t1, Time t2 )
+        {
+            return t1.ToSeconds() < t2.ToSeconds();
+        }
+
+        public static bool operator >( Time t1, Time t2 )
+        {
+            return t1.ToSeconds() > t2.ToSeconds();
+        }
+
+        private void Normalize()
+        {
+            if ( Seconds >= 60 )
+            {
+                Minutes += Seconds / 60;
+                Seconds %= 60;
+            }
+            else if ( Seconds < 0 )
+            {
+                int extraMin = ( Math.Abs(Seconds) / 60 ) + 1;
+                Seconds += extraMin * 60;
+                Minutes -= extraMin;
+            }
+
+            if ( Minutes < 0 )
+            {
+                Minutes = 0; // 필요에 따라 수정
+                Seconds = 0; // 필요에 따라 수정
+            }
+        }
+
+        public int ToSeconds()
+        {
+            return Minutes * 60 + Seconds;
+        }
+
+        public override string ToString()
+        {
+            return $"{Minutes:D2}:{Seconds:D2}";
+        }
+    }
+    public static void Main(
+        string [] args )
+    {
+        Console.WriteLine(Solution2.solution("10:55", "00:05", "00:15", "06:55", ["prev", "next", "next"]));
+    }
+    public static string solution( string video_len, string pos, string op_start, string op_end, string [] commands )
+    {
+        Time TimeParse( string time )
+        {
+            string [] timeArray = time.Split(":");
+            int min = int.Parse(timeArray [0]);
+            int sec = int.Parse(timeArray [1]);
+
+            return new Time(min, sec);
+        }
+
+        Time curTime = TimeParse(pos);
+        Time opStart = TimeParse(op_start);
+        Time opEnd = TimeParse(op_end);
+        Time videoTime = TimeParse(video_len);
+
+        for ( int i = 0; i < commands.Length; i++ )
+        {
+            switch ( commands [i] )
+            {
+                case "prev":
+                    curTime -= new Time(0, 10);
+                    if ( curTime < new Time(0, 0) )
+                    {
+                        curTime = new Time(0, 0); // 0으로 설정
+                    }
+                    break;
+                case "next":
+                    curTime += new Time(0, 10);
+                    if ( curTime > videoTime )
+                    {
+                        curTime = videoTime;
+                    }
+                    break;
+            }
+        }
+
+        if ( curTime > opStart && curTime < opEnd )
+        {
+            curTime = opEnd;
+        }
+
+        return curTime.ToString();
+    }
 }
 
 
