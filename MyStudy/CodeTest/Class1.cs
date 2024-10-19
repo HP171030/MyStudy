@@ -1,7 +1,7 @@
 ﻿
 namespace MyStudy.CodeTest
-{ using System.Collections.Generic;
-    using System.Runtime.Serialization;
+{
+    using System.Collections.Generic;
 
     public class Level0
     {
@@ -270,12 +270,12 @@ namespace MyStudy.CodeTest
             int resultA = a;
             int resultB = b;
 
-            for(int i = 0; i < count; i++ )
+            for ( int i = 0; i < count; i++ )
             {
-                resultA = (resultA +1) /2;                         
-                resultB = (resultB +1) /2;
+                resultA = ( resultA + 1 ) / 2;
+                resultB = ( resultB + 1 ) / 2;
                 answer++;
-                if (resultA == resultB )
+                if ( resultA == resultB )
                 {
                     break;
                 }
@@ -288,11 +288,11 @@ namespace MyStudy.CodeTest
         public int Test19( int n, int [,] edge )
         {
             List<int> [] nodes = new List<int> [n + 1];
-            for(int i = 1; i < n + 1; i++ )
+            for ( int i = 1; i < n + 1; i++ )
             {
                 nodes [i] = new List<int>();
             }
-            for(int i = 0; i < edge.GetLength(0); i++ )
+            for ( int i = 0; i < edge.GetLength(0); i++ )
             {
                 int a = edge [i, 0];
                 int b = edge [i, 1];
@@ -300,7 +300,7 @@ namespace MyStudy.CodeTest
                 nodes [a].Add(b);
                 nodes [b].Add(a);
 
-                
+
             }
 
             Queue<int> queue = new Queue<int>();
@@ -311,11 +311,11 @@ namespace MyStudy.CodeTest
             queue.Enqueue(1);
             distance [1] = 0;
 
-            while(queue.Count > 0 )
+            while ( queue.Count > 0 )
             {
                 int current = queue.Dequeue();
-                
-                foreach(int neighbor in nodes [current] )
+
+                foreach ( int neighbor in nodes [current] )
                 {
                     if ( distance [neighbor] == -1 )
                     {
@@ -328,9 +328,9 @@ namespace MyStudy.CodeTest
             int maxDis = 0;
             int count = 0;
 
-            for(int i = 1; i <= n; i++ )
+            for ( int i = 1; i <= n; i++ )
             {
-                if(maxDis < distance [i] )
+                if ( maxDis < distance [i] )
                 {
 
                     maxDis = distance [i];
@@ -410,7 +410,7 @@ namespace MyStudy.CodeTest
         public string PCCP_1( string video_len, string pos, string op_start, string op_end, string [] commands )
         {
             string answer = "";
-            Time TimeParse(string time)
+            Time TimeParse( string time )
             {
                 string [] timeArray = time.Split(":");
                 int min = int.Parse(timeArray [0]);
@@ -426,19 +426,21 @@ namespace MyStudy.CodeTest
             Time videoTime = TimeParse(video_len);
 
 
-            for(int i =0; i < commands.Length; i++ )
+            for ( int i = 0; i < commands.Length; i++ )
             {
-                switch( commands [i] )
+                switch ( commands [i] )
                 {
-                    case "prev": curTime -= new Time(0, 10);
-                        if(curTime < new Time(0, 0) )
+                    case "prev":
+                        curTime -= new Time(0, 10);
+                        if ( curTime < new Time(0, 0) )
                         {
                             curTime.Seconds = 0;
                             curTime.Minutes = 0;
                         }
                         break;
-                    case "next" : curTime += new Time(0, 10);
-                        if(curTime > videoTime )
+                    case "next":
+                        curTime += new Time(0, 10);
+                        if ( curTime > videoTime )
                         {
                             curTime = videoTime;
                         }
@@ -456,7 +458,108 @@ namespace MyStudy.CodeTest
 
             return answer;
         }
+
+        public int Ctrl_Z( string s )
+        {
+            int answer = 0;
+            string [] array = s.Split(" ");
+
+            for ( int i = 0; array.Length > i; i++ )
+            {
+                if ( array [i] == "Z" )
+                {
+                    array [i - 1] = "0";
+                    array [i] = "0";
+                }
+            }
+            foreach ( string element in array )
+            {
+                answer += int.Parse(element);
+            }
+            return answer;
+        }
+        public int Triangle_1( int [] sides )
+        {
+            int answer = 0;
+
+            int bigger = sides [0] > sides [1] ? sides [0] : sides [1],
+            smaller = sides [0] > sides [1] ? sides [1] : sides [0];
+
+            for ( int i = bigger; i > bigger - smaller; i-- )
+            {
+                answer++;
+            }
+
+            for(int i = bigger+1; i < bigger + smaller; i++ )
+            {
+                answer++;
+            }
+
+            return answer;
+        }
+
     }
-        //    source :  https://school.programmers.co.kr/learn/challenges
+
+    public class Solution
+    {
+        // 시간 문자열을 초 단위로 변환하는 함수
+        public int TimeParse( string time )
+        {
+            string [] timeArray = time.Split(':');
+            int min = int.Parse(timeArray [0]);
+            int sec = int.Parse(timeArray [1]);
+            return min * 60 + sec;
+
+
+        }
+
+        // 초 단위를 다시 "MM:SS" 형식으로 변환하는 함수
+        public string TimeFormat( int timeInSeconds )
+        {
+            int min = timeInSeconds / 60;
+            int sec = timeInSeconds % 60;
+            return $"{min:D2}:{sec:D2}";
+        }
+        public int SkipOpening( int opStart, int opEnd, int curTime )
+        {
+            if ( curTime >= opStart && curTime <= opEnd )
+            {
+                return opEnd;
+            }
+            return curTime;
+        }
+        public string solution( string video_len, string pos, string op_start, string op_end, string [] commands )
+        {
+            // 각 시간을 초 단위로 변환
+            int curTime = TimeParse(pos);
+            int opStart = TimeParse(op_start);
+            int opEnd = TimeParse(op_end);
+            int videoTime = TimeParse(video_len);
+
+            curTime = SkipOpening(opStart, opEnd, curTime);
+
+            // 명령어 처리
+            foreach ( string command in commands )
+            {
+                if ( command == "prev" )
+                {
+                    curTime -= 10;
+                    if ( curTime < 0 ) curTime = 0; // 0초 이하로 가지 않게
+                }
+                else if ( command == "next" )
+                {
+                    curTime += 10;
+                    if ( curTime > videoTime ) curTime = videoTime; // 비디오 길이 초과 방지
+                }
+                curTime = SkipOpening(opStart, opEnd, curTime);
+            }
+
+
+            // 최종 시간을 "MM:SS" 형식으로 반환
+            return TimeFormat(curTime);
+        }
     }
+
+    //    source :  https://school.programmers.co.kr/learn/challenges
+}
 
