@@ -490,76 +490,157 @@ namespace MyStudy.CodeTest
                 answer++;
             }
 
-            for(int i = bigger+1; i < bigger + smaller; i++ )
+            for ( int i = bigger + 1; i < bigger + smaller; i++ )
             {
                 answer++;
             }
 
             return answer;
         }
-
-    }
-
-    public class Solution
-    {
-        // 시간 문자열을 초 단위로 변환하는 함수
-        public int TimeParse( string time )
+        public int [] WallPaper( string [] wallpaper )
         {
-            string [] timeArray = time.Split(':');
-            int min = int.Parse(timeArray [0]);
-            int sec = int.Parse(timeArray [1]);
-            return min * 60 + sec;
+
+            List<int> xList = new List<int>();
+            List<int> yList = new List<int>();
+
+            int size = wallpaper.Length;
 
 
-        }
 
-        // 초 단위를 다시 "MM:SS" 형식으로 변환하는 함수
-        public string TimeFormat( int timeInSeconds )
-        {
-            int min = timeInSeconds / 60;
-            int sec = timeInSeconds % 60;
-            return $"{min:D2}:{sec:D2}";
-        }
-        public int SkipOpening( int opStart, int opEnd, int curTime )
-        {
-            if ( curTime >= opStart && curTime <= opEnd )
+            for ( int i = 0; i < size; i++ )            //바탕화면 세로 사이즈 = wallPaperLength 가로사이즈 = wallpaper[i].Length
             {
-                return opEnd;
+
+                char [] chars = wallpaper [i].ToCharArray();
+                for ( int j = 0; j < chars.Length; j++ )
+                {
+                    if ( chars [j] == '#' )
+                    {
+                        xList.Add(j);
+                        yList.Add(i);
+                    }
+                }
             }
-            return curTime;
+
+            xList = xList.OrderBy(x => x).ToList();
+            yList = yList.OrderBy(y => y).ToList();
+
+            int [] answer = new int [] { yList [0], xList [0], yList [yList.Count - 1 + 1], xList [xList.Count - 1] + 1 };
+
+
+            return answer;
         }
-        public string solution( string video_len, string pos, string op_start, string op_end, string [] commands )
+        public int MonthlyCodeChallange( int left, int right )
         {
-            // 각 시간을 초 단위로 변환
-            int curTime = TimeParse(pos);
-            int opStart = TimeParse(op_start);
-            int opEnd = TimeParse(op_end);
-            int videoTime = TimeParse(video_len);
-
-            curTime = SkipOpening(opStart, opEnd, curTime);
-
-            // 명령어 처리
-            foreach ( string command in commands )
+            bool isEven( int n )
             {
-                if ( command == "prev" )
+                if ( n % 2 == 0 )
+                    return true;
+                return false;
+            }
+            List<int> Divider( int n )
+            {
+                List<int> result = new List<int>();
+                for ( int i = 1; i <= n; i++ )
                 {
-                    curTime -= 10;
-                    if ( curTime < 0 ) curTime = 0; // 0초 이하로 가지 않게
+                    if ( n % i == 0 )
+                        result.Add(i);
                 }
-                else if ( command == "next" )
+                return result;
+            }
+
+            int answer = 0;
+
+            for ( int i = left; i <= right; i++ )
+            {
+                answer += isEven(Divider(i).Count) ? i : -i;
+            }
+            return answer;
+        }
+        public string FoodFight( int [] food )
+        {
+            string answer = "";
+
+            for ( int i = 1; i < food.Length; i++ )
+            {
+                for ( int j = 1; j <= food [i] / 2; j++ )
                 {
-                    curTime += 10;
-                    if ( curTime > videoTime ) curTime = videoTime; // 비디오 길이 초과 방지
+                    answer += i;
                 }
+            }
+            char [] chars = answer.ToCharArray();
+            Array.Reverse(chars);
+            string reverse = new string(chars);
+            answer += $"0{reverse}";
+
+
+
+
+
+
+            return answer;
+        }
+
+        public class Solution
+        {
+            // 시간 문자열을 초 단위로 변환하는 함수
+            public int TimeParse( string time )
+            {
+                string [] timeArray = time.Split(':');
+                int min = int.Parse(timeArray [0]);
+                int sec = int.Parse(timeArray [1]);
+                return min * 60 + sec;
+
+
+            }
+
+            // 초 단위를 다시 "MM:SS" 형식으로 변환하는 함수
+            public string TimeFormat( int timeInSeconds )
+            {
+                int min = timeInSeconds / 60;
+                int sec = timeInSeconds % 60;
+                return $"{min:D2}:{sec:D2}";
+            }
+            public int SkipOpening( int opStart, int opEnd, int curTime )
+            {
+                if ( curTime >= opStart && curTime <= opEnd )
+                {
+                    return opEnd;
+                }
+                return curTime;
+            }
+            public string solution( string video_len, string pos, string op_start, string op_end, string [] commands )
+            {
+                // 각 시간을 초 단위로 변환
+                int curTime = TimeParse(pos);
+                int opStart = TimeParse(op_start);
+                int opEnd = TimeParse(op_end);
+                int videoTime = TimeParse(video_len);
+
                 curTime = SkipOpening(opStart, opEnd, curTime);
+
+                // 명령어 처리
+                foreach ( string command in commands )
+                {
+                    if ( command == "prev" )
+                    {
+                        curTime -= 10;
+                        if ( curTime < 0 ) curTime = 0; // 0초 이하로 가지 않게
+                    }
+                    else if ( command == "next" )
+                    {
+                        curTime += 10;
+                        if ( curTime > videoTime ) curTime = videoTime; // 비디오 길이 초과 방지
+                    }
+                    curTime = SkipOpening(opStart, opEnd, curTime);
+                }
+
+
+                // 최종 시간을 "MM:SS" 형식으로 반환
+                return TimeFormat(curTime);
             }
-
-
-            // 최종 시간을 "MM:SS" 형식으로 반환
-            return TimeFormat(curTime);
         }
-    }
 
-    //    source :  https://school.programmers.co.kr/learn/challenges
+        //    source :  https://school.programmers.co.kr/learn/challenges
+    }
 }
 
