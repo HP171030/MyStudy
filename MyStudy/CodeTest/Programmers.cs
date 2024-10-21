@@ -571,11 +571,42 @@ namespace MyStudy.CodeTest
             Array.Reverse(chars);
             string reverse = new string(chars);
             answer += $"0{reverse}";
+            return answer;
+        }
+        public int [,] HanoiTower( int n )
+        {
+            List<string> Solution( int n )
+            {
+                List<string> moves = new List<string>();
+                MoveDisks(n, 1, 3, 2, moves);
+                return moves;
+            }
 
+            int [,] answer = new int [,] { { } };
+            
+            int numberOfDisks = 3; // 예시: 3개의 원판
+            
+            void MoveDisks( int n, int source, int destination, int auxiliary, List<string> moves )
+            {
+                if ( n == 1 )
+                {
+                    moves.Add($"{source} {destination}");
+                    return;
+                }
 
+                MoveDisks(n - 1, source, auxiliary, destination, moves);
 
+                moves.Add($"{source} {destination}");
 
+                MoveDisks(n - 1, auxiliary, destination, source, moves);
+            }
+            List<string> result = Solution(numberOfDisks);
 
+            
+            foreach ( var move in result )
+            {
+                Console.WriteLine(move);
+            }
 
             return answer;
         }
