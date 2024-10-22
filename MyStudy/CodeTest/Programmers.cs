@@ -583,9 +583,9 @@ namespace MyStudy.CodeTest
             }
 
             int [,] answer = new int [,] { { } };
-            
+
             int numberOfDisks = 3; // 예시: 3개의 원판
-            
+
             void MoveDisks( int n, int source, int destination, int auxiliary, List<string> moves )
             {
                 if ( n == 1 )
@@ -602,7 +602,7 @@ namespace MyStudy.CodeTest
             }
             List<string> result = Solution(numberOfDisks);
 
-            
+
             foreach ( var move in result )
             {
                 Console.WriteLine(move);
@@ -610,7 +610,51 @@ namespace MyStudy.CodeTest
 
             return answer;
         }
+        public long GoldSilverConvey( int a, int b, int [] g, int [] s, int [] w, int [] t )
+        {
+            long answer = 4 * 10_000_000_000; // 충분히 큰 값으로 설정
+            long start = 0;
+            long end = 4 * 10_000_000_000; // 충분히 큰 값으로 설정
 
+            while ( end >= start )
+            {
+                long mid = ( end + start ) / 2; // 주어진 시간
+                long gold = 0; // 주어진 시간 내에 옮길 수 있는 금의 양
+                long silver = 0; // 주어진 시간 내에 옮길 수 있는 은의 양
+                long add = 0; // 주어진 시간 내에 옮길 수 있는 (금+은)의 양
+
+                for ( int i = 0; i < t.Length; i++ )
+                {
+                    long now_g = g [i];
+                    long now_s = s [i];
+                    long now_w = w [i];
+                    long now_t = t [i];
+
+                    long move_cnt = mid / ( now_t * 2 ); // 왕복 가능 횟수
+                    if ( mid % ( now_t * 2 ) >= now_t )
+                    { // 추가적인 편도 운반 가능 여부
+                        move_cnt += 1;
+                    }
+
+                    gold += Math.Min(now_g, move_cnt * now_w); // 금량
+                    silver += Math.Min(now_s, move_cnt * now_w); // 은량
+                    add += Math.Min(now_g + now_s, move_cnt * now_w); // 금과 은의 총량
+                }
+
+                // 필요 금과 은을 모두 옮길 수 있는지 확인
+                if ( gold >= a && silver >= b && add >= a + b )
+                {
+                    end = mid - 1; // 시간을 줄이기
+                    answer = Math.Min(mid, answer); // 최소값 갱신
+                }
+                else
+                {
+                    start = mid + 1; // 시간을 늘리기
+                }
+            }
+
+            return answer;
+        }
         public class Solution
         {
             // 시간 문자열을 초 단위로 변환하는 함수
