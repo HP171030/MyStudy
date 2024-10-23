@@ -713,6 +713,109 @@ namespace MyStudy.CodeTest
                 // 최종 시간을 "MM:SS" 형식으로 반환
                 return TimeFormat(curTime);
             }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            public struct NodeCost
+            {
+                public int Node { get; set; }
+                public int Cost { get; set; }
+
+                public NodeCost( int node, int cost )
+                {
+                    Node = node;
+                    Cost = cost;
+                }
+            }
+
+            // 우선순위 큐에서 사용할 구조체
+            public struct PQEntry : IComparable<PQEntry>
+            {
+                public int Cost { get; set; }
+                public int Node { get; set; }
+
+                public PQEntry( int cost, int node )
+                {
+                    Cost = cost;
+                    Node = node;
+                }
+
+                // 비용을 기준으로 우선순위를 비교
+                public int CompareTo( PQEntry other )
+                {
+                    return Cost.CompareTo(other.Cost);
+                }
+            }
+            public int TaxiFares( int n, int s, int a, int b, int [,] fares )
+            {
+                int answer = 0;
+
+                var graph = new Dictionary<int, List<NodeCost>>();
+                for ( int i = 1; i <= n; i++ )
+                {
+                    graph [i] = new List<NodeCost>();
+                }
+
+                for ( int i = 0; i < fares.GetLength(0); i++ )
+                {
+                    int start = fares [i, 0];
+                    int end = fares [i, 1];
+                    int fare = fares [i, 2];
+
+                    graph [start].Add(new NodeCost(end, fare));
+                    graph [end].Add(new NodeCost(start, fare));
+                }
+                var distFromS = Dijkstra(graph, s, n);
+                var distFromA = Dijkstra(graph, a, n);
+                var distFromB = Dijkstra(graph, b, n);
+
+                for ( int i = 1; i <= n; i++ )
+                {
+                    int cost = distFromS [i] + distFromA [i] + distFromB [i];
+                    answer = Math.Min(answer, cost);
+
+                }
+                return answer;
+
+
+                int [] Dijkstra( Dictionary<int, List<NodeCost>> graph, int start, int n )
+                {
+                    // distance 배열을 int.MaxValue로 초기화 (아직까지는 각 노드까지의 거리를 모름)
+                    var distance = Enumerable.Repeat(int.MaxValue, n + 1).ToArray();
+                    distance [start] = 0;  // 시작 노드의 거리는 0
+
+                    // 우선순위 큐를 사용하여 비용이 가장 적은 경로를 먼저 탐색
+                    var priorityQueue = new SortedSet<PQEntry>()
+    {
+        new PQEntry(0, start)  // 시작 노드를 우선순위 큐에 삽입 (비용 0)
+    };
+
+                    while ( priorityQueue.Count > 0 )
+                    {
+                        // 비용이 가장 적은 노드 꺼내기
+                        var current = priorityQueue.Min;
+                        priorityQueue.Remove(current);
+
+                        int currentCost = current.Cost;
+                        int currentNode = current.Node;
+
+                        // 현재 노드의 인접 노드들 탐색
+                        foreach ( var neighbor in graph [currentNode] )
+                        {
+                            int newCost = currentCost + neighbor.Cost;
+
+                            // 만약 새로운 경로가 더 짧다면 거리 갱신
+                            if ( newCost < distance [neighbor.Node] )
+                            {
+                                distance [neighbor.Node] = newCost;
+                                priorityQueue.Add(new PQEntry(newCost, neighbor.Node));
+                            }
+                        }
+                    }
+
+                    // 시작 노드로부터 각 노드까지의 최단 거리 배열 반환
+                    return distance;
+                }
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         //    source :  https://school.programmers.co.kr/learn/challenges
