@@ -2,6 +2,7 @@
 
 public class TowerOfHanoi
 {
+    IntPtr unManagedRs;
     public int [,] Solution( int n )
     {
         int totalMoves = ( int )Math.Pow(2, n) - 1; // Total number of moves
@@ -32,6 +33,15 @@ public class TowerOfHanoi
 
         // Step 3: Move n-1 disks from auxiliary to destination
         MoveDisks(n - 1, auxiliary, destination, source, moves, ref moveIndex);
+    }
+    void Dispose()
+    {
+
+    }
+    ~TowerOfHanoi()
+    {
+        GC.SuppressFinalize(this);
+
     }
 }
 
