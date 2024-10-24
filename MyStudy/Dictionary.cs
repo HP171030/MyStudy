@@ -20,7 +20,38 @@ namespace MyStudy
         }
 
     }
+    class Box
+    {
+        protected float width;
+        protected float height;
 
+        public Box SetWidth(float width )
+        {
+            this.width = width;
+            return this;
+        }
+        public Box SetHeight(float height )
+        {
+            this.height = height;
+            return this;
+        }
+    }
+
+    class OutLinedBox : Box
+    {
+        protected float outlineWidth;
+        public OutLinedBox SetOutlineWidth(float outlineWidth )
+        {
+            this.outlineWidth = outlineWidth;
+            return this;
+        }
+    }
+
+    class test
+    {
+      /*  OutLinedBox olBox1 = new OutLinedBox().SetOutlineWidth(2f)                     
+            .SetWidth(10f);     //박스타입 리턴이라 안됨*/
+    }
    /* class Program
     {
         static void Main( string [] args )

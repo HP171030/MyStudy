@@ -816,9 +816,51 @@ namespace MyStudy.CodeTest
                 }
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }
 
-        //    source :  https://school.programmers.co.kr/learn/challenges
+            bool CheckArray( int [,] arr, int x, int y, int size )
+            {
+                for ( int i = 0; i < size; i++ )
+                {
+                    for ( int j = 0; j < size; j++ )
+                    {
+                        if ( arr [x + i, y + j] != arr [x, y] )
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            void BuildLeaf( int [,] arr, int x, int y, int size, ref int [] answer )
+            {
+                int newSize = size / 2;
+                if ( size == 1 || CheckArray(arr, x, y, size) )
+                {
+                    if ( arr [x, y] == 0 )
+                        answer [0]++;
+                    else
+                        answer [1]++;
+                }
+                else
+                {
+                    BuildLeaf(arr, x, y, newSize, ref answer);
+                    BuildLeaf(arr, x + newSize, y, newSize, ref answer);
+                    BuildLeaf(arr, x, y + newSize, newSize, ref answer);
+                    BuildLeaf(arr, x + newSize, y + newSize, newSize, ref answer);
+                }
+            }
+
+
+            public int [] QuadTree( int [,] arr )
+            {
+                int [] answer = new int [2];
+                BuildLeaf(arr, 0, 0, arr.GetLength(0), ref answer);
+                return answer;
+            }
+
+
+            //    source :  https://school.programmers.co.kr/learn/challenges
+        }
     }
 }
 
