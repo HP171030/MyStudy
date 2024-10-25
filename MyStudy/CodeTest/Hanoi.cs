@@ -5,44 +5,40 @@ public class TowerOfHanoi
     IntPtr unManagedRs;
     public int [,] Solution( int n )
     {
-        int totalMoves = ( int )Math.Pow(2, n) - 1; // Total number of moves
-        int [,] moves = new int [totalMoves, 2]; // Create 2D array to hold the moves
-        MoveDisks(n, 1, 3, 2, moves, ref moveIndex);
-        return moves;
-    }
 
-    private int moveIndex = 0; // To keep track of the current move index
+        List<int []> list = new List<int []>();     //배열에 넣을 리스트
 
-    private void MoveDisks( int n, int source, int destination, int auxiliary, int [,] moves, ref int moveIndex )
-    {
-        if ( n == 1 )
+        Solve(n, 1, 3, 2,ref list);                 //n개 원반 1 => 3 2를 보조로 활용
+
+        int [,] answer = new int [,] { { list.Count,2 } };          //2차원 배열 리스트 갯수만큼 생성, 내부 배열 크기 2개
+        for ( int i = 0; i < list.Count; i++ )
         {
-            moves [moveIndex, 0] = source; // Move from source
-            moves [moveIndex, 1] = destination; // Move to destination
-            moveIndex++; // Increment the move index
-            return;
+            answer [i, 0] = list [i] [0];               //리스트 i의 배열의 첫번째 요소
+            answer [i, 1] = list [i] [1];               //리스트 i의 배열의 두번째 요소
         }
 
-        // Step 1: Move n-1 disks from source to auxiliary
-        MoveDisks(n - 1, source, auxiliary, destination, moves, ref moveIndex);
+        return answer;
 
-        // Step 2: Move the nth disk from source to destination
-        moves [moveIndex, 0] = source;
-        moves [moveIndex, 1] = destination;
-        moveIndex++; // Increment the move index
-
-        // Step 3: Move n-1 disks from auxiliary to destination
-        MoveDisks(n - 1, auxiliary, destination, source, moves, ref moveIndex);
     }
-    void Dispose()
+
+    void Solve(int n,int start,int end,int temp,ref List<int []> answer )
     {
+        
+                                                        //맨 아래 칸이 end 쪽으로 가야함
+        if( n == 1 )                                    // 옮기는 원반이 한개이면 옮기기 (배열에 넣기)
+        {
+            answer.Add(new int [] { start, end });
+        }
+        else
+        {
+            Solve(n - 1, start, temp, end,ref answer);          //맨 아래칸이 end쪽으로 가야하니까 나머지를(n-1)개를 temp 칸으로 이동                                 
+            answer.Add(new int [] { start, end });              //start에서 end로 마지막 원형을 이동
+            Solve(n - 1, temp, end, start, ref answer);         //임시칸에 있던거 end칸으로 이동
 
+        }
     }
-    ~TowerOfHanoi()
-    {
-        GC.SuppressFinalize(this);
 
-    }
+
 }
 
 public class Program
