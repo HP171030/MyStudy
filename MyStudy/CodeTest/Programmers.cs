@@ -3,8 +3,13 @@ namespace MyStudy.CodeTest
 {
     using System.Collections.Generic;
 
+    public interface IOpenable
+    {
+        void Open();
+    }
     public class Level0
     {
+
         public void Test2( string [] args )
         {
             Console.Clear();
@@ -857,9 +862,202 @@ namespace MyStudy.CodeTest
                 BuildLeaf(arr, 0, 0, arr.GetLength(0), ref answer);
                 return answer;
             }
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+            public int TargetNumber( int [] numbers, int target )
+            {
+
+                int DFS( int [] numbers, int index, int currentSum, int target )
+                {
+                    if ( index == numbers.Length )
+                    {
+                        if ( currentSum == target )
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+
+                    int add = DFS(numbers, index + 1, numbers [index] + currentSum, target);
+                    int sub = DFS(numbers, index + 1, currentSum - numbers [index], target);
+
+                    return add + sub;
+
+                }
+
+
+                return DFS(numbers, 0, 0, target);
+            }
+
+
+            public string [] TravelRoute( string [,] tickets )
+            {
+
+                List<string> tmpAnswer = new List<string>();
+                Queue<string> queue = new Queue<string>();
+
+                queue.Enqueue("ICN");
+
+
+                while ( queue.Count > 0 )
+                {
+                    List<string> tempArray = new List<string>();
+                    string currentCity = queue.Dequeue();
+                    tmpAnswer.Add(currentCity);
+                    for ( int i = 0; i < tickets.GetLength(0); i++ )
+                    {
+                        if ( tickets [i, 0] == "ICN" )
+                        {
+                            tempArray.Add(tickets [i, 1]);
+                        }
+                    }
+                    string resultCity = null;
+                    if ( tempArray.Count > 1 )
+                    {
+
+                        for ( int i = 0; i < tempArray.Count; i++ )
+                        {
+                            if ( string.IsNullOrEmpty(resultCity) || string.Compare(tempArray [i], resultCity) < 0 )
+                            {
+                                resultCity = tempArray [i];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        resultCity = tempArray [0];
+                    }
+                    queue.Enqueue(resultCity);
+                }
+
+                return tmpAnswer.ToArray();
+            }
             //    source :  https://school.programmers.co.kr/learn/challenges
+
+
+            public int Moves( List<int> arr )
+            {
+                bool IsOdd( int x )
+                {
+                    return x % 2 != 0;
+                }
+
+                int moveCount = 0;
+                int left = 0;               // 짝수가 와야 할 포인터
+                int right = arr.Count - 1;  // 홀수가 와야 할 포인터
+
+                while ( left < right )
+                {
+                    // 짝수가 올 위치에 홀수가 있다면
+                    if ( IsOdd(arr [left]) )
+                    {
+                        // 홀수가 올 위치에 짝수가 있을 때만 교환
+                        if ( !IsOdd(arr [right]) )
+                        {
+                            int temp = arr [left];
+                            arr [left] = arr [right];
+                            arr [right] = temp;
+                            moveCount++;
+                        }
+                        right--; // 홀수의 위치를 찾기 위해 이동
+                    }
+                    else
+                    {
+                        left++; // 짝수의 위치가 올바르다면 이동
+                    }
+                }
+                #region 주석설명               
+                /*이전 코드와 이번 코드의 차이점은 불필요한 교환을 방지하는 점에 있습니다.
+
+                이전 코드에서는 left와 right 포인터를 이동하는 조건이 덜 명확하여 불필요한 교환이 발생할 가능성이 있었습니다. 반면 이번 코드에서는 짝수 위치에 짝수가 있고, 홀수 위치에 홀수가 있으면 단순히 포인터만 이동하여 다음 위치를 검사합니다. 따라서 교환이 꼭 필요한 경우에만 수행되어 최소 이동이 보장됩니다.
+
+주요 차이점
+필요 없는 교환 방지:
+
+이번 코드에서는 left 포인터에 짝수가 있을 때, 또는 right 포인터에 홀수가 있을 때, 교환을 생략하고 포인터를 단순히 이동합니다.
+이전 코드에서는 조건이 명확하지 않아 이동이 필요 없는 경우에도 교환이 발생할 수 있었습니다.
+최소 교환 보장:
+
+잘못된 위치에 짝수와 홀수가 있을 때에만 교환을 수행하므로, 최소한의 이동 횟수를 보장합니다.
+이렇게 하면 테스트에서 요구한 것처럼 정확히 필요한 최소 횟수만큼만 이동하여 원하는 정렬 결과를 얻을 수 있습니다.*/
+                    #endregion
+                return moveCount;
+            }
+            public int [] NodeDistance(int s_nodes,int s_edges, int [] s_from, int [] s_to )
+            {
+                List<int> [] graph = new List<int> [s_nodes];
+
+                for(int i = 0; i < s_nodes; i++ )
+                {
+                    graph [i] = new List<int>();
+                }
+                for(int i = 0; i < s_edges; i++ )
+                {
+                    graph [s_from [i]].Add(s_to [i]);
+                    graph [s_to [i]].Add(s_from [i]);
+                }
+
+                bool [] visited = new bool [s_nodes];
+                int [] parent = new int [s_nodes];
+                Array.Fill(parent, -1);
+
+                HashSet<int> cycleNode = new HashSet<int> ();
+
+                bool isCycle = false;
+                void DFS(int node )
+                {
+                    visited [node] = true;
+                    foreach(int neighbor in graph [node] )
+                    {
+                        if ( !visited [neighbor] )
+                        {
+                            parent [neighbor] = node;
+                            DFS(neighbor);
+                        }
+                        else if (neighbor != parent [node] && !isCycle )
+                        {
+                            int cur = node;
+                            while(cur != neighbor )
+                            {
+                                cycleNode.Add(cur);
+                                cur = parent [cur];
+                            }
+                            cycleNode.Add(neighbor);
+                            isCycle = true;
+                        }
+                    }
+                }
+                DFS(0);
+
+                int [] distances = new int [s_nodes];
+                Array.Fill(distances, -1);
+
+                Queue<int> queue = new Queue<int>();
+                foreach(int cycle in cycleNode )
+                {
+                    distances [cycle] = 0;
+                    queue.Enqueue(cycle);
+                }
+
+                while ( queue.Count > 0 )
+                {
+                    int cur = queue.Dequeue();
+                    foreach(int nei in graph [cur] )
+                    {
+                        if ( distances [nei] == -1 )
+                        {
+                            distances [nei] = distances [cur] + 1;
+                            queue.Enqueue(nei);
+                        }
+                    }
+                }
+
+                return distances;
+            }
         }
     }
 }
