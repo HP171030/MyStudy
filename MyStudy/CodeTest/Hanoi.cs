@@ -43,7 +43,7 @@ public class TowerOfHanoi
 
 public class Program
 {
-    public static void Main( string [] args )
+    public static void Main3( string [] args )
     {
         TowerOfHanoi hanoi = new TowerOfHanoi();
         int numberOfDisks = 2; // Example: 2 disks

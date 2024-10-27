@@ -1,7 +1,9 @@
 ﻿
 namespace MyStudy.CodeTest
 {
+    using System.Collections;
     using System.Collections.Generic;
+    using static MyStudy.CodeTest.Level0.Solution;
 
     public interface IOpenable
     {
@@ -1058,6 +1060,115 @@ namespace MyStudy.CodeTest
 
                 return distances;
             }
+            public int solution( int n, int [,] wires )
+            {
+                Dictionary<int, List<int>> graph = new Dictionary<int, List<int>>();
+
+                
+
+                for ( int i = 0; i < wires.GetLength(0); i++ )
+                {
+                    int tower1 = wires [i, 0];
+                    int tower2 = wires [i, 1];
+
+                    if ( !graph.ContainsKey(tower1) )
+                    {
+                        graph [tower1] = new List<int>();
+                    }
+                    if ( !graph.ContainsKey(tower2) )
+                    {
+                        graph [tower2] = new List<int>();
+                    }
+
+                    graph [tower1].Add(tower2);
+                    graph [tower2].Add(tower1);
+                }
+                int [,] select = new int [1, 2];
+
+                for ( int i = 0; i < n; i++ )
+                {
+                    if ( graph [i].Count > select [0, 1] )
+                    {
+                        select [0, 0] = i;
+                        select [0, 1] = graph [i].Count;
+                    }
+                }
+
+ 
+                HashSet<int> nodeList = new HashSet<int>();
+
+                int min = int.MaxValue;
+
+                for ( int i = 0; i < graph [select [0, 0]].Count; i++ )
+                {
+                    Dictionary<int, List<int>> tempGraph = new Dictionary<int, List<int>>(graph);
+                    //  List<int> temp = new List<int>(graph [select [0, 0]]);
+                    tempGraph [select [0, 0]].RemoveAt(i);
+                    int index = 0;
+                    int [] compare = new int [2];
+                    for ( int j = 0; j < n; j++ )
+                    {
+                        if (nodeList.Count != 0 && nodeList.Contains(j) )
+                        {
+                            continue;
+                        }
+
+                        nodeList.Clear();
+                        nodeList = BFS(j, tempGraph);
+                        compare [index] = nodeList.Count;
+
+                        index++;
+                    }
+                    min = Math.Min(Math.Abs(compare [0] - compare [1]), min);
+                }
+
+                return min;
+            }
+
+            HashSet<int> BFS(int n,Dictionary<int,List<int>> graph)
+            {
+                Queue<int> queue = new Queue<int>();
+                HashSet<int> visited = new HashSet<int> ();
+
+                queue.Enqueue(n);
+                visited.Add(n);
+
+                while(queue.Count > 0 )
+                {
+                    int node = queue.Dequeue();
+                    foreach(var i in graph [node] )
+                    {
+                        if ( !visited.Contains(i) )
+                        {
+                            queue.Enqueue(i);
+                            visited.Add(i);
+                        }
+
+                    }
+
+                }
+                return visited;
+            }
+
+   /*         void BFS( int n, Dictionary<int, List<int>> graph )
+            {
+                queue.Enqueue(n);
+                nodeList.Add(n);
+                while ( queue.Count > 0 )
+                {
+                    int target = queue.Dequeue();
+                    foreach ( var t in graph [target] )
+                    {
+                        if ( parents [target] != t )
+                        {
+                            parents [t] = target;
+                            BFS(t, graph);
+                        }
+
+                    }
+                }
+
+            }*/
         }
     }
 }

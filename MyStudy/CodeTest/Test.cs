@@ -1,8 +1,4 @@
-﻿using System;
-
-
-
-class Result
+﻿class Result
 {
 
     /*
@@ -113,7 +109,8 @@ class Solution
     }
 
 }
-class NQueen {
+class NQueen
+{
 
     public static void chess_puzzle( int n )
     {
@@ -229,7 +226,7 @@ public class Solution2
     public static void Main(
         string [] args )
     {
-        Console.WriteLine(Solution2.solution("10:55", "00:05", "00:15", "06:55", ["prev", "next", "next"]));
+        Console.WriteLine(Solution2.WireTest(9, new int [,] { { 1, 3 }, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 4, 6 }, { 4, 7 }, { 7, 8 }, { 7, 9 } }));
     }
     public static string solution( string video_len, string pos, string op_start, string op_end, string [] commands )
     {
@@ -275,7 +272,109 @@ public class Solution2
 
         return curTime.ToString();
     }
+
+    public static int WireTest( int n, int [,] wires )
+    {
+        Dictionary<int, List<int>> graph = new Dictionary<int, List<int>>();
+
+
+
+        for ( int i = 0; i < wires.GetLength(0); i++ )
+        {
+            int tower1 = wires [i, 0];
+            int tower2 = wires [i, 1];
+
+            if ( !graph.ContainsKey(tower1) )
+            {
+                graph [tower1] = new List<int>();
+            }
+            if ( !graph.ContainsKey(tower2) )
+            {
+                graph [tower2] = new List<int>();
+            }
+
+            graph [tower1].Add(tower2);
+            graph [tower2].Add(tower1);
+        }
+        int [,] select = new int [1, 2];
+
+
+
+        int min = int.MaxValue;
+        foreach ( var higherNode in graph.Keys )
+        {
+            for ( int i = 0; i < graph [higherNode].Count; i++ )
+            {
+                HashSet<int> nodeList = new HashSet<int>();
+                Dictionary<int, List<int>> tempGraph = graph.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value.ToList());
+                //  List<int> temp = new List<int>(graph [select [0, 0]]);
+                int reverse = tempGraph [higherNode] [i];
+                tempGraph [higherNode].RemoveAt(i);
+                tempGraph [reverse].Remove(higherNode);
+
+
+                Console.WriteLine($"{i}번 간선 제거");
+
+                int index = 0;
+                int [] compare = new int [2];
+                HashSet<int> countSet = new HashSet<int>();
+                for ( int j = 1; j <= n; j++ )
+                {
+                    if ( nodeList.Count != 0 && countSet.Contains(j) )
+                    {
+                        continue;
+                    }
+
+                    //   nodeList.Clear();
+                    nodeList = BFS(j, tempGraph);
+                    countSet.UnionWith(nodeList);
+                    foreach ( var node in nodeList )
+                    {
+                        Console.WriteLine($"방문한 노드 {node})");
+                    }
+                    Console.WriteLine($"{index}번째 BFS종료\n\n");
+                    compare [index] = nodeList.Count;
+
+                    index++;
+                }
+                min = Math.Min(Math.Abs(compare [0] - compare [1]), min);
+                Console.WriteLine($"노드리스트 A({compare [0]})개와 노드리스트 B({compare [1]})을 비교 \n 결과값 : {Math.Abs(compare [0] - compare [1])}\n\n" +
+                    $"현재 최소 노드 갯수 차이 {min}\n\n");
+            }
+
+        }
+
+        return min;
+    }
+
+    static HashSet<int> BFS( int n, Dictionary<int, List<int>> graphList )
+    {
+        Queue<int> queue = new Queue<int>();
+        HashSet<int> visited = new HashSet<int>();
+
+        queue.Enqueue(n);
+        visited.Add(n);
+        while ( queue.Count > 0 )
+        {
+            int node = queue.Dequeue();
+            foreach ( var i in graphList [node] )
+            {
+                if ( !visited.Contains(i) )
+                {
+                    Console.WriteLine($"{node} => {i} 방문");
+                    queue.Enqueue(i);
+                    visited.Add(i);
+                }
+
+            }
+
+        }
+        return visited;
+    }
 }
+
 
 
 
