@@ -1149,26 +1149,145 @@ namespace MyStudy.CodeTest
                 }
                 return visited;
             }
-
-   /*         void BFS( int n, Dictionary<int, List<int>> graph )
+            public static int [,] MakingBiggerArray( int [,] arr )
             {
-                queue.Enqueue(n);
-                nodeList.Add(n);
-                while ( queue.Count > 0 )
-                {
-                    int target = queue.Dequeue();
-                    foreach ( var t in graph [target] )
-                    {
-                        if ( parents [target] != t )
-                        {
-                            parents [t] = target;
-                            BFS(t, graph);
-                        }
+                int yCount = arr.GetLength(0);
+                int xCount = arr.GetLength(1);
 
+                int biggerCount = Math.Max(yCount, xCount);
+
+                int [,] answer = new int [biggerCount, biggerCount];
+
+                for ( int i = 0; i < biggerCount; i++ )
+                {
+                    for ( int j = 0; j < biggerCount; j++ )
+                    {
+                        if ( j >= xCount || i >= yCount )
+                        {
+                            answer [j, i] = 0;
+                        }
+                        else
+                        {
+                            answer [j, i] = arr [j, i];
+                        }
                     }
                 }
 
-            }*/
+
+
+                return answer;
+            }
+            public int [] ParkingFees( int [] fees, string [] records )
+            {
+                
+
+                Dictionary<int, string []> parkDic = new Dictionary<int, string []>();
+                Dictionary<int, int> caldDic = new Dictionary<int, int> ();
+
+                for(int i = 0; i < records.Length; i++ )
+                {
+                    
+                    
+                   string[] elements = records [i].Split(" ");  //First : time, Seconds : Numbers, Third : InOut
+                                                                // elements [0].Split(":").Select(numbers => time += int.Parse(numbers));  // TotalTime
+                    string[] timeString = elements [0].Split(":");
+
+
+                   int carNumber = int.Parse(elements [1]);
+                    bool isIn = elements [2] == "IN" ? true : false;
+
+                    if ( isIn )
+                    {
+                        parkDic.Add(carNumber, timeString);
+                    }
+                    else
+                    {
+                        if(parkDic.ContainsKey(carNumber))
+                        {
+                            
+                            int inHour = int.Parse(parkDic [carNumber] [0]);
+                            int inMin = int.Parse(parkDic [carNumber] [1]);
+
+                            TimeSpan inTime = new TimeSpan(inHour, inMin, 0);
+
+                            int outHour = int.Parse(timeString [0]);
+                            int outMin = int.Parse(timeString [1]);
+
+                            TimeSpan outTime = new TimeSpan(outHour, outMin, 0);
+
+                            TimeSpan timeDiff = outTime - inTime;
+                            int totalMin = (int)timeDiff.TotalMinutes;
+                            
+                            parkDic.Remove(carNumber);
+
+                            if ( caldDic.ContainsKey(carNumber) )
+                                caldDic [carNumber] += totalMin;
+                            else
+                            {
+                                caldDic.Add(carNumber, totalMin);
+                            }
+                        }
+                    }
+                }
+
+                foreach(var kvp in parkDic )
+                {
+                   TimeSpan leftTime = new TimeSpan(int.Parse(kvp.Value [0]),int.Parse(kvp.Value [1]),0);
+                    TimeSpan finalTime = new TimeSpan(23, 59, 0);
+                    int total = ( int )( finalTime - leftTime ).TotalMinutes;
+                    if ( caldDic.ContainsKey(kvp.Key) )
+                    {
+                        caldDic [kvp.Key] += total;
+
+                    }
+                    else
+                    {
+                        caldDic [kvp.Key] = total;
+                    }
+                }
+                int [] answer = new int [caldDic.Count];
+                int idx = 0;
+                foreach (var kvp in caldDic.OrderBy(kvp =>kvp.Key))
+                {
+                    int total = fees [1];
+                    if(kvp.Value > fees [0] )
+                    {
+                        total += ( int )Math.Ceiling((double)( kvp.Value - fees [0] ) / fees [2])
+                            * fees [3];
+
+                    }
+
+                    answer [idx++] = total;
+                    
+
+                }
+               
+
+
+
+
+                return answer;
+            }
+
+            /*         void BFS( int n, Dictionary<int, List<int>> graph )
+                     {
+                         queue.Enqueue(n);
+                         nodeList.Add(n);
+                         while ( queue.Count > 0 )
+                         {
+                             int target = queue.Dequeue();
+                             foreach ( var t in graph [target] )
+                             {
+                                 if ( parents [target] != t )
+                                 {
+                                     parents [t] = target;
+                                     BFS(t, graph);
+                                 }
+
+                             }
+                         }
+
+                     }*/
         }
     }
 }
