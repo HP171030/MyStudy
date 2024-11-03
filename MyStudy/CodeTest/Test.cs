@@ -1,4 +1,6 @@
-﻿class Result
+﻿using System;
+
+class Result
 {
 
     /*
@@ -383,4 +385,189 @@ public class Solution2
  *
  * The function accepts INTEGER n as parameter.
  */
+
+public class N_Test
+{
+
+    int ConnectBoard( int [,] board, int x, int y, int maxX, int maxY, int [] parentArg )
+    {
+        int result = 0;
+        int [] cur = new int [] { x, y };
+        if ( x > 0 )
+        {
+            int [] target = new int [] { x - 1, y };
+            if ( parentArg != target && board [x, y] == board [x - 1, y] )
+            {
+                result++;
+                result += ConnectBoard(board, x - 1, y, maxX, maxY, cur);
+            }
+        }
+        if ( y > 0 )
+        {
+            int [] target = new int [] { x, y - 1 };
+            if ( parentArg != target && board [x, y] == board [x, y - 1] )
+            {
+                result++;
+                ConnectBoard(board, x, y - 1, maxX, maxY, cur);
+            }
+        }
+        if ( x < maxX )
+        {
+            int [] target = new int [] { x + 1, y };
+            if ( parentArg != target && board [x, y] == board [x + 1, y] )
+            {
+                result++;
+                ConnectBoard(board, x + 1, y, maxX, maxY, cur);
+            }
+        }
+        if ( y < maxY )
+        {
+            int [] target = new int [] { x, y + 1 };
+            if ( parentArg != target && board [x, y] == board [x, y + 1] )
+            {
+                result++;
+                ConnectBoard(board, x, y + 1, maxX, maxY, cur);
+            }
+        }
+        return result;
+    }
+    public int solution( int [,] board )
+    {
+        int answer = 0;
+        int maxY = board.GetLength(0);
+        int maxX = board.GetLength(1);
+
+
+        for ( int y = 0; y < maxY; y++ )
+        {
+            for ( int x = 0; x < maxX; x++ )
+            {
+                int tempResult = 0;
+                tempResult += ConnectBoard(board, x, y, maxX, maxY, null);
+                if ( tempResult > answer )
+                {
+                    answer = tempResult;
+                }
+
+            }
+        }
+        if ( answer == 0 )
+        {
+            answer = -1;
+        }
+        return answer;
+    }
+
+
+
+    public string solution( int k, string [] dic, string chat )
+    {
+        var stringSet = new HashSet<string>(dic);
+        var words = chat.Split(" ");
+        for ( int i = 0; i < words.Length; i++ )
+        {
+            if ( isContain(words [i], k, stringSet) )
+            {
+                words [i] = new string('#', words [i].Length);
+            }
+        }
+        return string.Join(" ", words);
+    }
+
+    bool isContain( string word, int k, HashSet<string> setString )
+    {
+        if ( setString.Contains(word) ) return true;
+        if ( !word.Contains('.') ) return false;
+
+        return CheckString(word, k, setString);
+    }
+
+    bool CheckString( string word, int k, HashSet<string> setString )
+    {
+        var dotCount = word.Count(c => c == '.');
+        if ( dotCount > k ) return false;
+
+        Queue<string> queue = new Queue<string>();
+
+        queue.Enqueue(word);
+        while ( queue.Count > 0 )
+        {
+            var curWord = queue.Dequeue();
+            if ( !curWord.Contains('.') )
+            {
+                if ( setString.Contains(curWord) ) return true;
+                continue;
+            }
+
+            for ( char c = 'a'; c <= 'z'; c++ )
+            {
+                var replacedWord = ReplaceFirst(curWord, c);
+                queue.Enqueue(replacedWord);
+            }
+        }
+        return false;
+    }
+    string ReplaceFirst( string word, char replace )
+    {
+        var idx = word.IndexOf('.');
+        if ( idx == -1 ) return word;
+        return word.Substring(0, idx) + replace + word.Substring(idx + 1);
+    }
+
+    public int testest( int [] blocks, int [] distances )
+    {
+        int n = blocks.Length;
+
+        bool [] visited = new bool [n];
+
+        Queue << int index,int >>
+
+
+        int minPushes = int.MaxValue;
+
+        for ( int start = 0; start < n; start++ )
+        {
+            Array.Fill(visited, false);
+            queue.Clear();
+            queue.Enqueue((start, 1));
+            visited [start] = true;
+
+            int lastReached = start;
+
+            while ( queue.Count > 0 )
+            {
+                var (index, pushes) = queue.Dequeue();
+
+                int left = index;
+                int right = index;
+
+                while ( left > 0 && distances [left - 1] <= blocks [index] - index - left )){
+            left--;
+        }
+        while ( right < n - 1 && distances [right] <= blocks [index] - ( right - index ) )
+        {
+            right++;
+        }
+
+        for ( int i = left; i <= right; i++ )
+        {
+            if ( !visited [i] )
+            {
+                visited [i] = true;
+                queue.Enqueue((i, pushes + 1));
+            }
+        }
+
+        if ( right == n - 1 )
+        {
+            minPushes = Math.Min(minPushes, pushes);
+            break;
+        }
+    }
+}
+return minPushes;
+    }
+
+}
+    
 
