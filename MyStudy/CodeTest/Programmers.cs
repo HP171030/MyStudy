@@ -1,6 +1,7 @@
 ﻿
 namespace MyStudy.CodeTest
 {
+    using Microsoft.VisualBasic;
     using System.Collections;
     using System.Collections.Generic;
     using static MyStudy.CodeTest.Level0.Solution;
@@ -1267,6 +1268,48 @@ namespace MyStudy.CodeTest
 
 
                 return answer;
+            }
+
+            public int [] SnailTriangle(int n)
+            {
+                int count = 0;
+                int valuePoint = 2;
+
+                for(int i = n; i > 0; i-- )
+                {
+                    count += i;
+                }
+                int [] answer = new int [count];
+                answer [0] = 1;
+                CalTriangle(n, answer, 0,count,ref valuePoint);
+                return answer;
+
+            }
+            void CalTriangle( int n, int [] answer, int start, int count, ref int value )
+            {
+
+                int end = start + 2;
+                int temp = start;
+                for ( int i = 1; i < n; i++ )         //좌측 대각선 채우기
+                {
+                    temp = temp + i;
+                    answer [temp] = value++;
+                }
+                for ( int i = temp + 1; i < temp + n; i++ ) //밑변 채우기
+                {
+                    answer [i] = value++;
+                }
+                temp = n;
+                for ( int i = count; i > end; i -= temp )
+                {
+                    temp--;
+                    answer [i] = value++;
+                }
+                if ( value < count )
+                {
+                    CalTriangle(n, answer,end + 2 , count, ref value);
+                }
+             
             }
 
             /*         void BFS( int n, Dictionary<int, List<int>> graph )
