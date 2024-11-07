@@ -4,6 +4,7 @@ namespace MyStudy.CodeTest
     using Microsoft.VisualBasic;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using static MyStudy.CodeTest.Level0.Solution;
 
     public interface IOpenable
@@ -1312,6 +1313,93 @@ namespace MyStudy.CodeTest
              
             }
 
+
+            public int solution( string [] board )
+            {
+                int count = int.MaxValue;
+                int row = board.Length;
+                int col = board [0].Length;
+                char [,] boardPoint = new char [row, col];
+
+                int [] startPoint = new int [2];
+                bool startFound = false;
+
+                // board를 2D char 배열로 변환하고 시작 위치 찾기
+                for ( int i = 0; i < row; i++ )
+                {
+                    for ( int j = 0; j < col; j++ )
+                    {
+                        boardPoint [i, j] = board [i] [j];
+                        if ( boardPoint [i, j] == 'R' )
+                        {
+                            startPoint = new int [] { i, j };
+                            startFound = true;
+                        }
+                    }
+                }
+
+                if ( !startFound ) return -1; // 시작점이 없으면 -1 반환
+
+                // 방문 여부를 저장하는 HashSet으로 변경
+                Stack<int []> visited = new Stack<int []>();
+                visited.Push(startPoint);
+
+                check(startPoint, boardPoint, ref count, new HashSet<string>(), 0);
+
+                return count == int.MaxValue ? -1 : count; // 경로를 찾지 못한 경우 -1 반환
+            }
+
+            void check( int [] targetPoint, char [,] boardPoint, ref int count, HashSet<string> visited, int checkCount )
+            {
+                int [] [] directions = new int [] []
+                {
+            new int[] { 1, 0 },   // 아래
+            new int[] { 0, -1 },  // 왼쪽
+            new int[] { -1, 0 },  // 위
+            new int[] { 0, 1 }    // 오른쪽
+                };
+
+                visited.Add($"{targetPoint [0]},{targetPoint [1]}");
+
+                for ( int i = 0; i < 4; i++ )
+                {
+                    int [] point = MovePoint(i, targetPoint, boardPoint);
+                    if ( point != null && !visited.Contains($"{point [0]},{point [1]}") )
+                    {
+                        if ( boardPoint [point [0], point [1]] == 'G' )
+                        {
+                            count = Math.Min(checkCount + 1, count);
+                            return;
+                        }
+                        check(point, boardPoint, ref count, visited, checkCount + 1);
+                    }
+                }
+
+                visited.Remove($"{targetPoint [0]},{targetPoint [1]}");
+            }
+
+            int [] MovePoint( int dir, int [] startPoint, char [,] boardPoint )
+            {
+                int row = boardPoint.GetLength(0);
+                int col = boardPoint.GetLength(1);
+                int [] point = ( int [] )startPoint.Clone();
+
+                while ( true )
+                {
+                    int newRow = point [0] + ( dir == 0 ? 1 : dir == 2 ? -1 : 0 );
+                    int newCol = point [1] + ( dir == 1 ? -1 : dir == 3 ? 1 : 0 );
+
+                    if ( newRow < 0 || newRow >= row || newCol < 0 || newCol >= col || boardPoint [newRow, newCol] == 'D' )
+                    {
+                        break;
+                    }
+
+                    point [0] = newRow;
+                    point [1] = newCol;
+                }
+
+                return point [0] == startPoint [0] && point [1] == startPoint [1] ? null : point;
+            }
             /*         void BFS( int n, Dictionary<int, List<int>> graph )
                      {
                          queue.Enqueue(n);
