@@ -1,0 +1,741 @@
+﻿1. DB란?
+
+DB
+- 데이터의 집합
+
+DBMS(Database Management System)
+- DB를 운영 관리하는 프로그램을 말한다.
+
+1. 대용량일것
+2. 동시에 여러 사용자가 사용할 수 있어야한다.
+
+테이블
+- DB의 최소단위로 하나 이상의 열과 행으로 이루어져 있다.
+
+SQL
+- DB를 구축,관리하고 활용하기 위해 사용되는 언어이다.
+
+쿼리
+- DB에 데이터나 정보를 요청하는 언어 
+
+DBMS		제작사		언어
+MySQL		Oracle		SQL
+MariaDB		MariaDB		SQL
+Oracle		Oracle		PL/SQL
+SQLServer		MS		T-SQL
+
+
+계층형 DBMS - 트리형태 ( 마지막 구조가 연결되어있지 않음)
+망형 DBMS - 계층형에서 마지막 구조가 연결만 되어있음
+관계형 DBMS - 테이블이라는 최소단위로 구성되며 하나 이상의 열과 행으로 이루어져 있음
+---
+
+2.DB Modeling
+
+소프트웨어 개발 절차
+
+ex) 폭포수 모델
+프로젝트 계획 - 업무 분석 - 시스템 설계 - 프로그램 구현 - 테스트 - 유지보수
+
+3.SQL syntax
+기본형식 : SELECT ~ FROM ~ WHERE 
+-- ------------------------------
+-- 1절
+-- ------------------------------
+
+SHOW DATABASES
+
+-- ------------------------------
+-- 2절
+-- ------------------------------
+
+SELECT * FROM member;
+
+SELECT member_name, member_addr FROM member;
+
+SELECT * FROM member WHERE member_name = '아이유' ;
+
+-- ------------------------------
+-- 3절
+-- ------------------------------
+
+SELECT * FROM member WHERE member_name = '아이유' ;
+
+CREATE INDEX idx_member_name ON member(member_name);
+
+SELECT * FROM member WHERE member_name = '아이유' ;
+
+CREATE VIEW member_view
+AS
+	SELECT * FROM member;
+
+SELECT * FROM member_view;
+
+SELECT * FROM member WHERE member_name = '나훈아';
+SELECT * FROM product WHERE product_name = '삼각김밥';
+
+DELIMITER //
+CREATE PROCEDURE myProc() 
+BEGIN
+	SELECT * FROM member WHERE member_name = '나훈아';
+	SELECT * FROM product WHERE product_name = '삼각김밥';
+END //
+DELIMITER ;
+
+CALL myProc();
+/////////////////////////////////////////////////////////////////////////
+-- ------------------------------
+-- 1절
+-- ------------------------------
+USE DB_이름 (특정 DB를 선택,지정)
+순서는 SELECT 열_이름 (특정 열,혹은 모든 열(*)을 선택)
+			FROM 테이블_이름 (데이터를 조회할 테이블 지정)
+			WHERE 조건식 (특정 조건에 맞는 데이터만 필터링)
+			GROUP BY 열_이름 ( 특정 열 기준으로 그룹화)
+			HAVING 조건식 (그룹화 된 기준으로 조건 필터링)
+			ORDER BY 열_이름 (특정 열 기준으로 정렬)
+			LIMIT 숫자 (반환되는 데이터 개수 제한)
+
+즉 테이블에서 보고 싶은 열은 SELECT에 적고
+FROM에 어떤 테이블 호출할지 적고 
+그 뒤에 조건을 붙여가는 방식
+
+USE market_db;
+
+USE sys;
+SELECT * FROM member;
+
+USE market_db;
+SELECT * FROM member;
+
+SELECT * FROM market_db.member;			USE문을 사용한것과 같은 뜻(DB를 여러개 사용할때 활용할 수 있다)
+
+SELECT mem_name FROM member;
+
+SELECT addr, debut_date, mem_name
+	FROM member;
+
+SELECT addr 주소, debut_date "데뷔 일자", mem_name 
+	FROM member;
+
+SELECT * FROM member WHERE mem_name = '블랙핑크';
+
+SELECT * FROM member WHERE mem_number = 4;
+
+SELECT mem_id, mem_name 
+	FROM member 
+	WHERE height <= 162;
+
+SELECT mem_name, height, mem_number 
+	FROM member 
+	WHERE height >= 165 AND mem_number > 6;
+
+SELECT mem_name, height, mem_number 
+	FROM member 
+	WHERE height >= 165 OR mem_number > 6;
+
+SELECT mem_name, height 
+	FROM member 
+	WHERE height >= 163 AND height <= 165;
+
+SELECT mem_name, height 
+   FROM member 
+   WHERE height BETWEEN 163 AND 165;
+   
+SELECT mem_name, addr 
+   FROM member 
+   WHERE addr = '경기' OR addr = '전남' OR addr = '경남';
+   
+SELECT mem_name, addr 
+   FROM member 
+   WHERE addr IN('경기', '전남', '경남');
+   
+SELECT * 
+   FROM member 
+   WHERE mem_name LIKE '우%';		%는 여러글자를 말함
+
+SELECT * 
+   FROM member 
+   WHERE mem_name LIKE '__핑크';		_는 한글자를 뜻함
+   
+SELECT height FROM member WHERE mem_name = '에이핑크';
+
+SELECT mem_name, height FROM member WHERE height > 164;
+
+SELECT mem_name, height FROM member
+	WHERE height > (SELECT height FROM member WHERE mem_name = '에이핑크');
+
+SELECT mem_id, mem_name, debut_date 
+   FROM member 
+   ORDER BY debut_date;				//오름차순
+
+SELECT mem_id, mem_name, debut_date 
+   FROM member 
+   ORDER BY debut_date DESC;		//내림차순
+   
+SELECT mem_id, mem_name, debut_date, height
+   FROM member 
+   ORDER BY height DESC
+   WHERE height  >= 164;  -- 오류 발생
+   
+SELECT mem_id, mem_name, debut_date, height
+   FROM member 
+   WHERE height  >= 164
+   ORDER BY height DESC;
+   
+SELECT mem_id, mem_name, debut_date, height
+   FROM member 
+   WHERE height  >= 164
+   ORDER BY height DESC, debut_date ASC;
+			(1차조건에서 구분이 안될 경우 2차조건에서 구분 시도)
+   
+SELECT *
+   FROM member 
+   LIMIT 3;						//처음부터 ~ 3개까지만 봄
+   
+SELECT mem_name, debut_date
+   FROM member
+   ORDER BY debut_date
+   LIMIT 3;						
+   
+SELECT mem_name, height
+   FROM member
+   ORDER BY height DESC
+   LIMIT 3,2;					//3번째부터 ~ 2개까지만 봄
+   
+SELECT addr FROM member;
+
+SELECT addr FROM member ORDER BY addr;
+
+SELECT DISTINCT addr FROM member;		//중복데이터는 표기하지 않음
+
+-- ------------------------------
+-- 2절
+-- ------------------------------
+
+SELECT mem_id, amount FROM buy ORDER BY mem_id;
+
+SELECT mem_id, SUM(amount) FROM buy GROUP BY mem_id;
+
+SELECT mem_id "회원 아이디", SUM(amount) "총 구매 개수"
+   FROM buy GROUP BY mem_id;
+
+
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy GROUP BY mem_id;
+   
+SELECT AVG(amount) "평균 구매 개수" FROM buy;
+
+SELECT mem_id, AVG(amount) "평균 구매 개수" 
+	FROM buy
+	GROUP BY mem_id;
+    
+SELECT COUNT(*) FROM member;
+
+SELECT COUNT(phone1) "연락처가 있는 회원" FROM member;
+
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy 
+   GROUP BY mem_id;
+
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy 
+   WHERE SUM(price*amount) > 1000 
+   GROUP BY mem_id;
+
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy 
+   GROUP BY mem_id   
+   HAVING SUM(price*amount) > 1000 ;
+
+SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy 
+   GROUP BY mem_id   
+   HAVING SUM(price*amount) > 1000
+   ORDER BY SUM(price*amount) DESC;
+
+-- ------------------------------
+-- 3절
+-- ------------------------------
+
+USE market_db;
+CREATE TABLE hongong1 (toy_id  INT, toy_name CHAR(4), age INT);
+INSERT INTO hongong1 VALUES (1, '우디', 25);
+
+INSERT INTO hongong1(toy_id, toy_name) VALUES (2, '버즈');
+
+INSERT INTO hongong1(toy_name,age, toy_id) VALUES ('제시', 20, 3);
+
+CREATE TABLE hongong2 ( 
+   toy_id  INT AUTO_INCREMENT PRIMARY KEY, 
+   toy_name CHAR(4), 
+   age INT);
+
+INSERT INTO hongong2 VALUES (NULL, '보핍', 25);
+INSERT INTO hongong2 VALUES (NULL, '슬링키', 22);
+INSERT INTO hongong2 VALUES (NULL, '렉스', 21);
+SELECT * FROM hongong2;
+
+SELECT LAST_INSERT_ID(); 
+
+ALTER TABLE hongong2 AUTO_INCREMENT=100;
+INSERT INTO hongong2 VALUES (NULL, '재남', 35);
+SELECT * FROM hongong2;
+
+CREATE TABLE hongong3 ( 
+   toy_id  INT AUTO_INCREMENT PRIMARY KEY, 
+   toy_name CHAR(4), 
+   age INT);
+ALTER TABLE hongong3 AUTO_INCREMENT=1000;
+SET @@auto_increment_increment=3;
+
+INSERT INTO hongong3 VALUES (NULL, '토마스', 20);
+INSERT INTO hongong3 VALUES (NULL, '제임스', 23);
+INSERT INTO hongong3 VALUES (NULL, '고든', 25);
+SELECT * FROM hongong3;
+
+SELECT COUNT(*) FROM world.city;
+
+DESC world.city;
+
+SELECT * FROM world.city LIMIT 5;
+
+CREATE TABLE city_popul ( city_name CHAR(35), population INT);
+
+INSERT INTO city_popul
+    SELECT Name, Population FROM world.city;
+    
+USE market_db;
+UPDATE city_popul
+    SET city_name = '서울'
+    WHERE city_name = 'Seoul';
+SELECT  * FROM city_popul WHERE  city_name = '서울';
+
+UPDATE city_popul
+    SET city_name = '뉴욕', population = 0
+    WHERE city_name = 'New York';
+SELECT  * FROM city_popul WHERE  city_name = '뉴욕';
+
+-- UPDATE city_popul
+--    SET city_name = '서울'
+
+UPDATE city_popul
+    SET population = population / 10000 ;
+SELECT * FROM city_popul LIMIT 5;
+
+DELETE FROM city_popul 
+    WHERE city_name LIKE 'New%';
+
+DELETE FROM city_popul 
+    WHERE city_name LIKE 'New%'
+    LIMIT 5;
+
+CREATE TABLE big_table1 (SELECT * FROM world.city , sakila.country); 
+CREATE TABLE big_table2 (SELECT * FROM world.city , sakila.country); 
+CREATE TABLE big_table3 (SELECT * FROM world.city , sakila.country); 
+SELECT COUNT(*) FROM big_table1;
+
+DELETE FROM big_table1;
+DROP TABLE big_table2;
+TRUNCATE TABLE big_table3;
+
+//////////////////////////////////////////
+
+-- ------------------------------
+-- 1절
+-- ------------------------------
+
+USE market_db;
+CREATE TABLE hongong4 (
+    tinyint_col  TINYINT,
+    smallint_col SMALLINT,
+    int_col    INT,
+    bigint_col BIGINT );
+
+INSERT INTO hongong4 VALUES(127, 32767, 2147483647, 9000000000000000000);
+
+INSERT INTO hongong4 VALUES(128, 32768, 2147483648, 90000000000000000000);
+
+DROP TABLE IF EXISTS buy, member;
+CREATE TABLE member -- 회원 테이블
+( mem_id      CHAR(8) NOT NULL PRIMARY KEY, -- 회원 아이디(PK)
+  mem_name        VARCHAR(10) NOT NULL, -- 이름
+  mem_number    INT NOT NULL,  -- 인원수
+  addr          CHAR(2) NOT NULL, -- 주소(경기,서울,경남 식으로 2글자만입력)
+  phone1        CHAR(3), -- 연락처의 국번(02, 031, 055 등)
+  phone2        CHAR(8), -- 연락처의 나머지 전화번호(하이픈제외)
+  height        SMALLINT,  -- 평균 키
+  debut_date    DATE  -- 데뷔 일자
+);
+
+DROP TABLE IF EXISTS member;
+CREATE TABLE member -- 회원 테이블
+( mem_id      CHAR(8) NOT NULL PRIMARY KEY, -- 회원 아이디(PK)
+  mem_name        VARCHAR(10) NOT NULL, -- 이름
+  mem_number    TINYINT  NOT NULL,  -- 인원수
+  addr          CHAR(2) NOT NULL, -- 주소(경기,서울,경남 식으로 2글자만입력)
+  phone1        CHAR(3), -- 연락처의 국번(02, 031, 055 등)
+  phone2        CHAR(8), -- 연락처의 나머지 전화번호(하이픈제외)
+  height        TINYINT UNSIGNED,  -- 평균 키
+  debut_date    DATE  -- 데뷔 일자
+);
+
+
+DROP TABLE IF EXISTS member;
+CREATE TABLE member -- 회원 테이블
+( mem_id      CHAR(8) NOT NULL PRIMARY KEY, -- 회원 아이디(PK)
+  mem_name        VARCHAR(10) NOT NULL, -- 이름
+  mem_number    TINYINT  NOT NULL,  -- 인원수
+  addr          CHAR(2) NOT NULL, -- 주소(경기,서울,경남 식으로 2글자만입력)
+  phone1        CHAR(3), -- 연락처의 국번(02, 031, 055 등)
+  phone2        CHAR(8), -- 연락처의 나머지 전화번호(하이픈제외)
+  height        TINYINT UNSIGNED,  -- 평균 키
+  debut_date    DATE  -- 데뷔 일자
+);
+
+CREATE TABLE big_table (
+  data1  CHAR(255),
+  data2  VARCHAR(16384) );
+
+CREATE DATABASE netflix_db;
+USE netflix_db;
+CREATE TABLE movie 
+  (movie_id        INT,
+   movie_title     VARCHAR(30),
+   movie_director  VARCHAR(20),
+   movie_star      VARCHAR(20),
+   movie_script    LONGTEXT,
+   movie_film      LONGBLOB
+); 
+
+
+USE market_db;
+SET @myVar1 = 5 ;
+SET @myVar2 = 4.25 ;
+
+SELECT @myVar1 ;
+SELECT @myVar1 + @myVar2 ;
+
+SET @txt = '가수 이름==> ' ;
+SET @height = 166;
+SELECT @txt , mem_name FROM member WHERE height > @height ;
+
+
+SET @count = 3;
+SELECT mem_name, height FROM member ORDER BY height LIMIT @count;
+
+SET @count = 3;
+PREPARE mySQL FROM 'SELECT mem_name, height FROM member ORDER BY height LIMIT ?';
+EXECUTE mySQL USING @count;
+
+SELECT AVG(price) '평균 가격' FROM buy;
+
+SELECT CAST(AVG(price) AS SIGNED)  '평균 가격'  FROM buy ;
+-- 또는
+SELECT CONVERT(AVG(price) , SIGNED)  '평균 가격'  FROM buy ;
+
+SELECT CAST('2022$12$12' AS DATE);
+SELECT CAST('2022/12/12' AS DATE);
+SELECT CAST('2022%12%12' AS DATE);
+SELECT CAST('2022@12@12' AS DATE);
+
+SELECT num, CONCAT(CAST(price AS CHAR), 'X', CAST(amount AS CHAR) ,'=' ) '가격X수량',
+    price*amount '구매액' 
+  FROM buy ;
+
+SELECT '100' + '200' ; -- 문자와 문자를 더함 (정수로 변환되서 연산됨)
+SELECT CONCAT('100', '200'); -- 문자와 문자를 연결 (문자로 처리)
+SELECT CONCAT(100, '200'); -- 정수와 문자를 연결 (정수가 문자로 변환되서 처리)
+SELECT 1 > '2mega'; -- 정수인 2로 변환되어서 비교                  (참일 경우 1 거짓일 경우 0)
+SELECT 3 > '2MEGA'; -- 정수인 2로 변환되어서 비교
+SELECT 0 = 'mega2'; -- 문자는 0으로 변환됨
+
+-- ------------------------------
+-- 2절
+-- ------------------------------
+
+USE market_db;
+SELECT * 
+   FROM buy
+     INNER JOIN member          
+     ON buy.mem_id = member.mem_id
+   WHERE buy.mem_id = 'GRL';
+
+SELECT * 
+   FROM buy
+     INNER JOIN member
+     ON buy.mem_id = member.mem_id;
+     
+SELECT mem_id, mem_name, prod_name, addr, CONCAT(phone1, phone2) AS '연락처' 
+   FROM buy
+     INNER JOIN member
+     ON buy.mem_id = member.mem_id;
+
+SELECT buy.mem_id, mem_name, prod_name, addr, CONCAT(phone1, phone2) AS '연락처' 
+   FROM buy
+     INNER JOIN member
+     ON buy.mem_id = member.mem_id;
+
+
+SELECT B.mem_id, M.mem_name, B.prod_name, M.addr, 
+        CONCAT(M.phone1, M.phone2) AS '연락처' 
+   FROM buy B
+     INNER JOIN member M
+     ON B.mem_id = M.mem_id;
+          
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr
+   FROM buy B
+     INNER JOIN member M
+     ON B.mem_id = M.mem_id
+   ORDER BY M.mem_id;
+
+SELECT DISTINCT M.mem_id, M.mem_name, M.addr
+   FROM buy B
+     INNER JOIN member M
+     ON B.mem_id = M.mem_id
+   ORDER BY M.mem_id;
+   
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr
+   FROM member M
+     LEFT OUTER JOIN buy B
+     ON M.mem_id = B.mem_id
+   ORDER BY M.mem_id;
+
+SELECT M.mem_id, M.mem_name, B.prod_name, M.addr
+   FROM buy B
+     RIGHT OUTER JOIN member M
+     ON M.mem_id = B.mem_id
+   ORDER BY M.mem_id;
+   
+SELECT DISTINCT M.mem_id, B.prod_name, M.mem_name, M.addr
+   FROM member M
+     LEFT OUTER JOIN buy B
+     ON M.mem_id = B.mem_id
+   WHERE B.prod_name IS NULL
+   ORDER BY M.mem_id;
+
+SELECT * 
+   FROM buy 
+     CROSS JOIN member ;
+
+SELECT COUNT(*) "데이터 개수"
+   FROM sakila.inventory
+      CROSS JOIN world.city;
+
+SELECT COUNT(*) "데이터 개수"
+   FROM sakila.inventory
+      CROSS JOIN world.city;
+
+CREATE TABLE cross_table
+    SELECT *
+       FROM sakila.actor
+          CROSS JOIN world.country;
+
+SELECT * FROM cross_table LIMIT 5;
+
+USE market_db;
+CREATE TABLE emp_table (emp CHAR(4), manager CHAR(4), phone VARCHAR(8));
+
+INSERT INTO emp_table VALUES('대표', NULL, '0000');
+INSERT INTO emp_table VALUES('영업이사', '대표', '1111');
+INSERT INTO emp_table VALUES('관리이사', '대표', '2222');
+INSERT INTO emp_table VALUES('정보이사', '대표', '3333');
+INSERT INTO emp_table VALUES('영업과장', '영업이사', '1111-1');
+INSERT INTO emp_table VALUES('경리부장', '관리이사', '2222-1');
+INSERT INTO emp_table VALUES('인사부장', '관리이사', '2222-2');
+INSERT INTO emp_table VALUES('개발팀장', '정보이사', '3333-1');
+INSERT INTO emp_table VALUES('개발주임', '정보이사', '3333-1-1');
+
+SELECT A.emp "직원" , B.emp "직속상관", B.phone "직속상관연락처"
+   FROM emp_table A
+      INNER JOIN emp_table B
+         ON A.manager = B.emp
+   WHERE A.emp = '경리부장';
+
+-- ------------------------------
+-- 3절
+-- ------------------------------
+
+DROP PROCEDURE IF EXISTS ifProc1; -- 기존에 만든적이 있다면 삭제
+DELIMITER $$
+CREATE PROCEDURE ifProc1()
+BEGIN
+   IF 100 = 100 THEN  
+      SELECT '100은 100과 같습니다.';
+   END IF;
+END $$
+DELIMITER ;
+CALL ifProc1();
+
+
+DROP PROCEDURE IF EXISTS ifProc2; 
+DELIMITER $$
+CREATE PROCEDURE ifProc2()
+BEGIN
+   DECLARE myNum INT;  -- myNum 변수선언
+   SET myNum = 200;  -- 변수에 값 대입
+   IF myNum = 100 THEN  
+      SELECT '100입니다.';
+   ELSE
+      SELECT '100이 아닙니다.';
+   END IF;
+END $$
+DELIMITER ;
+CALL ifProc2();
+
+
+DROP PROCEDURE IF EXISTS ifProc3; 
+DELIMITER $$
+CREATE PROCEDURE ifProc3()
+BEGIN
+    DECLARE debutDate DATE; -- 데뷰일
+    DECLARE curDate DATE; -- 오늘
+    DECLARE days INT; -- 활동한 일수
+
+    SELECT debut_date INTO debutDate -- debut_date 결과를 hireDATE에 대입
+       FROM market_db.member
+       WHERE mem_id = 'APN';
+
+    SET curDATE = CURRENT_DATE(); -- 현재 날짜
+    SET days =  DATEDIFF(curDATE, debutDate); -- 날짜의 차이, 일 단위
+
+    IF (days/365) >= 5 THEN -- 5년이 지났다면
+          SELECT CONCAT('데뷔한지 ', days, '일이나 지났습니다. 핑순이들 축하합니다!');
+    ELSE
+          SELECT '데뷔한지 ' + days + '일밖에 안되었네요. 핑순이들 화이팅~' ;
+    END IF;
+END $$
+DELIMITER ;
+CALL ifProc3();
+
+SELECT CURRENT_DATE(), DATEDIFF('2021-12-31', '2000-1-1');
+
+DROP PROCEDURE IF EXISTS caseProc; 
+DELIMITER $$
+CREATE PROCEDURE caseProc()
+BEGIN
+    DECLARE point INT ;
+    DECLARE credit CHAR(1);
+    SET point = 88 ;
+    
+    CASE 
+        WHEN point >= 90 THEN
+            SET credit = 'A';
+        WHEN point >= 80 THEN
+            SET credit = 'B';
+        WHEN point >= 70 THEN
+            SET credit = 'C';
+        WHEN point >= 60 THEN
+            SET credit = 'D';
+        ELSE
+            SET credit = 'F';
+    END CASE;
+    SELECT CONCAT('취득점수==>', point), CONCAT('학점==>', credit);
+END $$
+DELIMITER ;
+CALL caseProc();
+
+
+SELECT mem_id, SUM(price*amount) "총구매액"
+   FROM buy
+   GROUP BY mem_id;
+   
+SELECT mem_id, SUM(price*amount) "총구매액"
+   FROM buy
+   GROUP BY mem_id
+   ORDER BY SUM(price*amount) DESC ;
+
+SELECT B.mem_id, M.mem_name, SUM(price*amount) "총구매액"
+   FROM buy B
+         INNER JOIN member M
+         ON B.mem_id = M.mem_id
+   GROUP BY B.mem_id
+   ORDER BY SUM(price*amount) DESC ;
+
+
+SELECT M.mem_id, M.mem_name, SUM(price*amount) "총구매액"
+   FROM buy B
+         RIGHT OUTER JOIN member M
+         ON B.mem_id = M.mem_id
+   GROUP BY M.mem_id
+   ORDER BY SUM(price*amount) DESC ;
+   
+
+SELECT M.mem_id, M.mem_name, SUM(price*amount) "총구매액",
+        CASE  
+           WHEN (SUM(price*amount)  >= 1500) THEN '최우수고객'
+           WHEN (SUM(price*amount)  >= 1000) THEN '우수고객'
+           WHEN (SUM(price*amount) >= 1 ) THEN '일반고객'
+           ELSE '유령고객'
+        END "회원등급"
+   FROM buy B
+         RIGHT OUTER JOIN member M
+         ON B.mem_id = M.mem_id
+   GROUP BY M.mem_id
+   ORDER BY SUM(price*amount) DESC ;
+   
+DROP PROCEDURE IF EXISTS whileProc; 
+DELIMITER $$
+CREATE PROCEDURE whileProc()
+BEGIN
+    DECLARE i INT; -- 1에서 100까지 증가할 변수
+    DECLARE hap INT; -- 더한 값을 누적할 변수
+    SET i = 1;
+    SET hap = 0;
+
+    WHILE (i <= 100) DO
+        SET hap = hap + i;  -- hap의 원래의 값에 i를 더해서 다시 hap에 넣으라는 의미
+        SET i = i + 1;      -- i의 원래의 값에 1을 더해서 다시 i에 넣으라는 의미
+    END WHILE;
+
+    SELECT '1부터 100까지의 합 ==>', hap;   
+END $$
+DELIMITER ;
+CALL whileProc();
+
+
+DROP PROCEDURE IF EXISTS whileProc2; 
+DELIMITER $$
+CREATE PROCEDURE whileProc2()
+BEGIN
+    DECLARE i INT; -- 1에서 100까지 증가할 변수
+    DECLARE hap INT; -- 더한 값을 누적할 변수
+    SET i = 1;
+    SET hap = 0;
+
+    myWhile: 
+    WHILE (i <= 100) DO  -- While문에 label을 지정
+       IF (i%4 = 0) THEN
+         SET i = i + 1;     
+         ITERATE myWhile; -- 지정한 label문으로 가서 계속 진행
+       END IF;
+       SET hap = hap + i; 
+       IF (hap > 1000) THEN 
+         LEAVE myWhile; -- 지정한 label문을 떠남. 즉, While 종료.
+       END IF;
+       SET i = i + 1;
+    END WHILE;
+
+    SELECT '1부터 100까지의 합(4의 배수 제외), 1000 넘으면 종료 ==>', hap; 
+END $$
+DELIMITER ;
+CALL whileProc2();
+
+
+use market_db;
+PREPARE myQuery FROM 'SELECT * FROM member WHERE mem_id = "BLK"';
+EXECUTE myQuery;
+DEALLOCATE PREPARE myQuery;
+
+
+DROP TABLE IF EXISTS gate_table;
+CREATE TABLE gate_table (id INT AUTO_INCREMENT PRIMARY KEY, entry_time DATETIME);
+
+SET @curDate = CURRENT_TIMESTAMP(); -- 현재 날짜와 시간
+
+PREPARE myQuery FROM 'INSERT INTO gate_table VALUES(NULL, ?)';
+EXECUTE myQuery USING @curDate;
+DEALLOCATE PREPARE myQuery;
+
+SELECT * FROM gate_table;
+
