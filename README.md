@@ -1,30 +1,36 @@
 # 📚 Study
 
-공부한 내용 정리하고 모아놓는 Repos
+A collection of topics and skills I have studied.
 
 ---
 
-## ✏️ 기본
+## ✏️ Fundamentals
 
-- **게임 엔진**:
-  - Unity 🎮
+- **Engine**:
+  - Unity
   
-- **프로그래밍 언어**:
-  - C# 💻
+- **Language**:
+  - C#
+  - Java
 
-- **네트워킹**:
-  - Photon ☁️
+- **Network**:
+  - Photon 
 
-- **백엔드**:
-  - Firebase 🔥
+- **DB**:
+  - Firebase
+  - MySQL
+    
+- **Development Tools**
+  - Visual Studio
+  - Eclipse
 
 ---
 
-## 📖 추가 학습 목표
+## 📖 Future Learning Goals
 
-- **RESTful API** 📡
-- **프레임워크** 🛠️
-- **CS** 📚
+- RESTful API Development 📡
+- Frameworks 🛠️
+- Computer Science (CS) Concepts 📚
 
 ---
 
