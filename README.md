@@ -35,7 +35,7 @@ A collection of topics and skills I have studied.
 ---
 
 
-## 🔗 참고 자료
+## 🔗 ref
 
 - [Unity 공식 문서](https://docs.unity3d.com/)
 - [C# 가이드](https://docs.microsoft.com/en-us/dotnet/csharp/)
