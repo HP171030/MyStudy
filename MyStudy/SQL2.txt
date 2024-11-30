@@ -1,3 +1,167 @@
-﻿내부 조인(두 테이블을 엮음)
+﻿- CREATE SCHEMA 'DB 이름' : DB 만들기
+
+- CREATE TABLE 'DB 이름'.'테이블 이름'
+('열 이름' 타입() 널여부, ... ) : 테이블 생성
+
+- USE DB_이름 (특정 DB를 선택,지정)
+	순서는 SELECT 열_이름 (특정 열,혹은 모든 열(*)을 선택)
+			FROM 테이블_이름 (데이터를 조회할 테이블 지정)
+			WHERE 조건식 (특정 조건에 맞는 데이터만 필터링)
+			GROUP BY 열_이름 ( 특정 열 기준으로 그룹화)
+			HAVING 조건식 (그룹화 된 기준으로 조건 필터링)
+			ORDER BY 열_이름 (특정 열 기준으로 정렬)
+			LIMIT 숫자 (반환되는 데이터 개수 제한)
+
+즉 테이블에서 보고 싶은 열은 SELECT에 적고
+FROM에 어떤 테이블 호출할지 적고 
+그 뒤에 조건을 붙여가는 방식
+
+- CREATE INDEX 인덱스이름 ON 테이블이름 (열 이름)
+인덱스를 생성하면 데이터베이스가 선택한 열(column)의 값을 기반으로 별도의 데이터 구조(주로 B-Tree 또는 다른 구조)를 생성하여 데이터를 정렬하고, 
+해당 열의 값과 테이블 행(row)의 위치를 연결함 (열 값에 대한 포인터 생성)
+인덱스가 존재하면 데이터베이스는 먼저 인덱스를 사용하려고 시도함
+
+- CREATE VIEW 뷰이름
+AS
+	SELECT * FROM 테이블이름
+
+뷰 = AS 뒤에 나온 셀렉트와 같은 효과
+
+- DELIMITER //
+CREATE PROCEDURE 프로시져이름()
+BEGIN
+	내용
+END//
+DELIMITER ;
+
+CALL 프로시져이름();
+
+함수로 만들 수 있음
+
+- SELECT * FROM market_db.member;			USE문을 사용한것과 같은 뜻(DB를 여러개 사용할때 활용할 수 있다)
+
+-   WHERE addr = '경기' OR addr = '전남' OR addr = '경남';
+    WHERE addr IN('경기', '전남', '경남');				같은 방식이다.
+
+- SELECT * 
+   FROM member 
+   WHERE mem_name LIKE '우%';		%는 여러글자를 말함
+
+- SELECT * 
+   FROM member 
+   WHERE mem_name LIKE '__핑크';		_는 한글자를 뜻함
+
+- SELECT mem_id, mem_name, debut_date, height
+   FROM member 
+   WHERE height  >= 164
+   ORDER BY height DESC, debut_date ASC;
+			(1차조건에서 구분이 안될 경우 2차조건에서 구분 시도)
+
+- SELECT DISTINCT addr FROM member;		//중복데이터는 표기하지 않음
+
+
+- SELECT mem_id "회원 아이디", SUM(price*amount) "총 구매 금액"
+   FROM buy 
+   GROUP BY mem_id   
+   HAVING SUM(price*amount) > 1000
+   ORDER BY SUM(price*amount) DESC;
+
+- INSERT INTO 테이블이름(열 이름1,2,3) VALUES(삽입값1,2,3);
+
+-  CREATE TABLE hongong2 ( 
+   toy_id  INT AUTO_INCREMENT PRIMARY KEY,				디폴트값 자동으로 1씩 올라가도록 설정
+   toy_name CHAR(4), 
+   age INT); 
+
+- CREATE TABLE hongong3 ( 
+   toy_id  INT AUTO_INCREMENT PRIMARY KEY, 
+   toy_name CHAR(4), 
+   age INT);
+	ALTER TABLE hongong3 AUTO_INCREMENT=1000;		자동 증가 시작을 1000부터
+	SET @@auto_increment_increment=3;				자동 증가 간격을 3으로
+
+UPDATE DB이름
+	SET 열 이름 = '변경 후 이름'
+	WHERE 열 이름 = '변경 전 이름'
+
+-	DELETE FROM big_table1; (선택적 제거 / 구조 유지 /속도 느림 / 트리거 실행)
+	DROP TABLE big_table2;  (전체 제거   / 구조 삭제 / 속도 빠름 / 트리거 실행X)
+	TRUNCATE TABLE big_table3; (전체 제거/ 구조 유지 / 속도 빠름 / 트리거 실행 )
+
+
+-   SET @myVar1 = 5 ;			변수 선언
+	SET @myVar2 = 4.25 ;
+
+-   SET @count = 3;
+	PREPARE mySQL FROM 'SELECT mem_name, height FROM member ORDER BY height LIMIT ?';  
+	EXECUTE mySQL USING @count;
+	DEALLOCATE PREPARE mySQL; (메모리에서 해제)
+
+	매개변수 사용시 PREPARE 필요
+	한 번 컴파일되고 그 후 여러 번 재사용가능
+	값이 변수로 바인딩되므로, SQL 인젝션을 방지
+
+
+-   SELECT CAST(AVG(price) AS SIGNED)  '평균 가격'  FROM buy ;
+	-- 또는
+	SELECT CONVERT(AVG(price) , SIGNED)  '평균 가격'  FROM buy ;
+
+
+- 내부 조인(두 테이블을 조건에 맞도록 엮음)
 => 
 일대다 관계 : 기본키(PK) - 외래키(FK) 관계
+
+SELECT 열 이름1,열 이름2,열 이름3 (열 이름 앞에 테이블수식어. 붙여서 테이블 지칭)
+FROM 테이블이름2 테이블수식어
+INNER JOIN 테이블이름1 테이블수식어			(이너조인은 ON 조건에 맞는 행만 결합,아우터는 LEFT면 FROM 쪽 RIGHT면 조인쪽 테이블의 행은 전부 표현)
+ON 테이블2.열이름 = 테이블1.열이름 (조건)
+ORDER BY 테이블.열이름
+
+- 외부 조인 (두 테이블을 엮는데 한 테이블은 전부 보이게)
+- 크로스조인 (두 테이블의 모든행을 서로 엮음)
+- 셀프조인 ( 같은 테이블 내에서 두 개의 서로 다른 행을 연결해야 할 경우, 테이블을 두 번 참조)
+
+- 스토어드 프로시저 구조
+
+DELIMITER $$
+CREATE PROCEDURE 프로시저 이름()
+BEGIN
+내용
+END $$
+DELIMITER ;
+CALL 프로시저 이름()
+
+제약조건 키
+
+PRIMARY KEY (기본 키)
+- 기본 키로 생성한 것은 자동으로 클러스터 형 인덱스가 생성된다.
+- 클러스터란 같은 성격의 데이터를 묶어 저장하는 형식
+- 중복이 안되는 고유한 키 
+FOREING KEY
+UNIQUE KEY
+- 널값이 허용되는 고유 키 (중복이 안됨)
+CHECK(조건)
+- 데이터에 조건을 붙여 제약을 걸 수 있음
+
+
+뷰에 PK가 안뜬다고 테이블에 PK가 없다 가정할 수 없음(뷰는 테이블의 필요한 내용을 가져와 테이블처럼 보여주는것이기 때문)
+
+클러스터인덱스(PK)
+- PK로 지정된 키를 순서대로 정렬하고 페이지를 만들어 헤더를 가져와 루트를 만듬
+
+보조인덱스
+- 메모리를 뒤에 더 할당하여 지정된 데이터를 순서대로 정렬하고 페이지 + #순서 형태로 저장한 리프페이지를 만듬
+리프페이지 헤더를 가져와 루트페이지를 만듬
+
+클러스터형 인덱스 구조
+테이블 데이터를 PK 순서대로 정렬.
+인덱스 노드:
+루트 페이지 → 중간 페이지 → 리프 페이지.
+리프 페이지에는 실제 데이터가 포함.
+보조 인덱스 구조
+지정된 열의 값 순서로 인덱스를 생성.
+인덱스 노드:
+루트 페이지 → 중간 페이지 → 리프 페이지.
+리프 페이지에는 데이터 위치 정보가 포함.
+
+where절에 들어간 (아무 가공이 되지 않은)열이 인덱스가 있다면 인덱스를 사용함
