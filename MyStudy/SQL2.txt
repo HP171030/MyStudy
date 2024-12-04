@@ -118,6 +118,17 @@ UPDATE DB이름
 	-- 또는
 	SELECT CONVERT(AVG(price) , SIGNED)  '평균 가격'  FROM buy ;
 
+SELECT COLUMN_NAME			
+인포메이션 스키마 테이블 컬럼중 하나로 특정 테이블에서 컬럼의 이름을 가져올 때 사용
+FROM INFORMATION_SCHEMA.COLUMNS
+데이터베이스의 테이블 및 컬럼에 대한 메타데이터를 제공하는 시스템 테이블
+WHERE TABLE_SCHEMA = 'your_database_name' AND TABLE_NAME = 'your_table_name'
+특정 DB 및 테이블을 지정
+ORDER BY ORDINAL_POSITION
+순차적으로
+LIMIT 1;
+한개
+
 
 - 내부 조인(두 테이블을 조건에 맞도록 엮음)
 => 
