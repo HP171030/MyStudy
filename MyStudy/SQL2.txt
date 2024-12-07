@@ -181,6 +181,8 @@ CHECK(조건)
 인덱스 노드:
 루트 페이지 → 중간 페이지 → 리프 페이지.
 리프 페이지에는 실제 데이터가 포함.
+
+
 보조 인덱스 구조
 지정된 열의 값 순서로 인덱스를 생성.
 인덱스 노드:
@@ -230,6 +232,17 @@ ALTER TABLE buy
 	WHERE 열이름 = 식별값
 
 	DELIMITER //
+	CREATE PROCEDURE my_proc()(IN 입력매개변수,OUT 출력매개변수)
+	BEGIN
+	내용
+	END //
+
+	DELIMITER ;
+	
+	CALL 프로시저이름(매개변수);
+
+
+	DELIMITER //
 	CREATE TRIGGER 트리거이름
 	AFTER INSERT
 	ON 적용테이블이름
@@ -240,3 +253,12 @@ ALTER TABLE buy
 	END //
 
 	DELIMITER ;
+
+
+	    WHILE (i <= 100) DO
+        SET hap = hap + i;  -- hap의 원래의 값에 i를 더해서 다시 hap에 넣으라는 의미
+        SET i = i + 1;      -- i의 원래의 값에 1을 더해서 다시 i에 넣으라는 의미
+    END WHILE;
+
+	함수,프로시져 안에서 변수선언은 DECLARE
+				외부에서 선언은 @로 한다.
