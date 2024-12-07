@@ -92,8 +92,8 @@ SELECT @변수명;
 	ALTER TABLE hongong3 AUTO_INCREMENT=1000;		자동 증가 시작을 1000부터
 	SET @@auto_increment_increment=3;				자동 증가 간격을 3으로
 
-UPDATE DB이름
-	SET 열 이름 = '변경 후 이름'
+UPDATE table이름
+	SET 열 이름 = '값'		(열에 해당하는 값을 변경)
 	WHERE 열 이름 = '변경 전 이름'
 
 -	DELETE FROM big_table1; (선택적 제거 / 구조 유지 /속도 느림 / 트리거 실행)
@@ -193,3 +193,50 @@ SELECT Func() INTO @변수명;
 
 커서선언 - 반복조건 선언 - 커서 열기 - 데이터 가져오기
 - 데이터 처리하기 - 커서 닫기
+
+
+
+
+SELECT * 
+   FROM member 
+   WHERE mem_name LIKE '우%';		%는 여러글자를 말함     LIKE는 와일드카드(%,_를 사용할 수 있게 해주는 패턴매칭연산자임 와일드카드 미사용시 =와 같다)
+
+
+   SELECT mem_id, mem_name, debut_date, height
+   FROM member 
+   WHERE height  >= 164
+   ORDER BY height DESC, debut_date ASC;
+    1차 정렬을 시도했을때 같은 수치(수치가 같아 정렬하기 애매한 경우)인 경우 2차정렬로 정렬 시도  
+
+집계함수(AVG,SUM,COUNT,MAX,MIN) 등은 WHERE쪽만 빼고 거의 사용할 수 있음(HAVING에 써야함)
+GROUPBY 없이 사용하면 전체 테이블에 대해서 집계함
+
+
+DELETE FROM big_table1;         // 선택 행 삭제 (구조 남겨둠/조건식 가능)
+DROP TABLE big_table2;          // 해당 테이블 완전 삭제
+TRUNCATE TABLE big_table3;      // 해당 테이블의 행 전부 삭제
+ALTER TABLE buy
+    ADD CONSTRAINT 
+    FOREIGN KEY(mem_id) REFERENCES member(mem_id)
+    ON UPDATE CASCADE               부모 테이블의 변경 작업에 자동으로 반응하여 자식 테이블의 데이터를 동기화함
+    ON DELETE CASCADE;
+
+
+	DELIMITER // (함수 또는 트리거 또는 프로시져 안의 내용을 구현하기 위해서 앞으로 세미콜론이 아닌 //를 구분자로 함)
+
+
+	UPDATE 테이블
+	SET 열이름 = 변경값
+	WHERE 열이름 = 식별값
+
+	DELIMITER //
+	CREATE TRIGGER 트리거이름
+	AFTER INSERT
+	ON 적용테이블이름
+	FOR EACH ROW
+	BEGIN
+	SET @msg = '뭐가 생성됐음';
+	INSERT INTO log_table(message) VALUES (@msg);
+	END //
+
+	DELIMITER ;

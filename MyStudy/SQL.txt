@@ -59,8 +59,6 @@ SELECT * FROM member WHERE member_name = '아이유' ;
 -- 3절
 -- ------------------------------
 
-SELECT * FROM member WHERE member_name = '아이유' ;
-
 CREATE INDEX idx_member_name ON member(member_name);
 
 SELECT * FROM member WHERE member_name = '아이유' ;
@@ -152,7 +150,7 @@ SELECT mem_name, addr
    
 SELECT * 
    FROM member 
-   WHERE mem_name LIKE '우%';		%는 여러글자를 말함
+   WHERE mem_name LIKE '우%';		%는 여러글자를 말함     LIKE는 와일드카드(%,_를 사용할 수 있게 해주는 패턴매칭연산자임 와일드카드 미사용시 =와 같다)
 
 SELECT * 
    FROM member 
@@ -187,7 +185,7 @@ SELECT mem_id, mem_name, debut_date, height
    FROM member 
    WHERE height  >= 164
    ORDER BY height DESC, debut_date ASC;
-			(1차조건에서 구분이 안될 경우 2차조건에서 구분 시도)
+    1차 정렬을 시도했을때 같은 수치(수치가 같아 정렬하기 애매한 경우)인 경우 2차정렬로 정렬 시도  
    
 SELECT *
    FROM member 
@@ -212,6 +210,11 @@ SELECT DISTINCT addr FROM member;		//중복데이터는 표기하지 않음
 -- ------------------------------
 -- 2절
 -- ------------------------------
+
+집계함수(AVG,SUM,COUNT,MAX,MIN) 등은 WHERE쪽만 빼고 거의 사용할 수 있음(HAVING에 써야함)
+GROUPBY 없이 사용하면 전체 테이블에 대해서 집계함
+
+
 
 SELECT mem_id, amount FROM buy ORDER BY mem_id;
 
@@ -335,9 +338,9 @@ CREATE TABLE big_table2 (SELECT * FROM world.city , sakila.country);
 CREATE TABLE big_table3 (SELECT * FROM world.city , sakila.country); 
 SELECT COUNT(*) FROM big_table1;
 
-DELETE FROM big_table1;
-DROP TABLE big_table2;
-TRUNCATE TABLE big_table3;
+DELETE FROM big_table1;         // 선택 행 삭제 (구조 남겨둠/조건식 가능)
+DROP TABLE big_table2;          // 해당 테이블 완전 삭제
+TRUNCATE TABLE big_table3;      // 해당 테이블의 행 전부 삭제
 
 //////////////////////////////////////////
 
@@ -916,7 +919,7 @@ CREATE TABLE buy
 ALTER TABLE buy
     ADD CONSTRAINT 
     FOREIGN KEY(mem_id) REFERENCES member(mem_id)
-    ON UPDATE CASCADE
+    ON UPDATE CASCADE               부모 테이블의 변경 작업에 자동으로 반응하여 자식 테이블의 데이터를 동기화함
     ON DELETE CASCADE;
     
 INSERT INTO buy VALUES(NULL, 'BLK', '지갑');
