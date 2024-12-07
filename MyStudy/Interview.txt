@@ -454,3 +454,12 @@ UniTask.WaitUntile( ()=> 조건) : 조건 달성때까지 작업지연(코루틴
 
  await UniTask.Delay(1000, cancellationToken: token); => 발행된 토큰을 통해 취소 시킬 수 있게 한 비동기작업
 
+
+Restful api 특성
+- Stateless 무상태성 : 이 때문에 서버는 확장성에 용이하지만 클라이언트는 요청을 더 보내야하는 단점이 있다.
+- HTTP프로토콜을 그대로 사용하기 때문에 웹의 장점을 활용 가능하다
+- 클라이언트와 서버 통신 방식 중 하나이다
+- 자원의 이름으로 구분해서 상태를 주고 받는 모든 방식을 말한다
+- 웹의 모든 자원에 HTTP URL 부여한다
+- HTTP 메서드 사용가능 GET POST PUT DELETE(CRUD operation)
+	
